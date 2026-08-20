@@ -1,0 +1,125 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const rawPosts = await getCollection('posts');
+const postsData = rawPosts.map(post => ({
+  slug: post.slug,
+  title: post.data.title,
+  date: post.data.date,
+  category: post.data.category,
+  summary: post.data.summary,
+  readTime: post.data.readTime,
+  content: post.body,
+}));
+---
+
+<BaseLayout>
+  <section class="lg:col-span-8 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-[#E5E5E5] dark:border-[#2E2E2E]">
+      <div class="flex gap-1.5 text-xs font-medium" id="categoryGroup">
+        <button class="cat-btn px-3 py-1.5 rounded bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900" data-cat="All">All</button>
+        <button class="cat-btn px-3 py-1.5 rounded text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition" data-cat="Algorithm">Algorithm</button>
+        <button class="cat-btn px-3 py-1.5 rounded text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition" data-cat="C++">C++</button>
+        <button class="cat-btn px-3 py-1.5 rounded text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition" data-cat="Math">Math</button>
+      </div>
+
+      <button id="sortBtn" class="flex items-center gap-1.5 px-2.5 py-1 rounded border border-[#E5E5E5] dark:border-[#2E2E2E] text-xs text-neutral-700 dark:text-neutral-300">
+        <i class="fa-solid fa-arrow-down-short-wide text-[10px]"></i>
+        <span id="sortLabel">최신순</span>
+      </button>
+    </div>
+
+    <div class="text-xs text-[#737373] pt-1">
+      Total <span id="countNum">{postsData.length}</span> posts
+    </div>
+
+    <div class="space-y-3" id="postContainer"></div>
+    <div id="noResults" class="hidden py-12 text-center text-xs text-[#737373]">
+      검색 조건과 일치하는 포스트가 없습니다.
+    </div>
+  </section>
+
+  <aside class="lg:col-span-4 space-y-6">
+    <div class="bg-white dark:bg-[#1E1E1E] p-5 rounded-lg border border-[#E5E5E5] dark:border-[#2E2E2E] text-xs">
+      <div class="font-bold text-neutral-900 dark:text-white text-sm mb-1">slew-tempo</div>
+      <p class="text-[#737373] leading-relaxed mb-4">알고리즘, 수식, 시스템 구현을 기록합니다.</p>
+    </div>
+
+    <div class="bg-white dark:bg-[#1E1E1E] p-4 rounded-lg border border-[#E5E5E5] dark:border-[#2E2E2E]">
+      <div class="flex items-center gap-2 text-xs text-neutral-400">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="제목 또는 본문 검색..." class="bg-transparent outline-none w-full text-neutral-800 dark:text-neutral-200 placeholder-neutral-400">
+      </div>
+    </div>
+  </aside>
+</BaseLayout>
+
+<script is:inline define:vars={{ postsData }}>
+  let currentCategory = 'All';
+  let isLatestSort = true;
+  let searchQuery = '';
+
+  function renderPosts() {
+    const container = document.getElementById('postContainer');
+    const noResults = document.getElementById('noResults');
+
+    let filtered = postsData.filter(post => {
+      const matchCategory = (currentCategory === 'All') || post.category.includes(currentCategory);
+      const query = searchQuery.toLowerCase().trim();
+      const matchSearch = query === '' || 
+        post.title.toLowerCase().includes(query) || 
+        post.summary.toLowerCase().includes(query) || 
+        post.content.toLowerCase().includes(query);
+      return matchCategory && matchSearch;
+    });
+
+    filtered.sort((a, b) => isLatestSort ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date));
+    document.getElementById('countNum').innerText = filtered.length;
+
+    if (filtered.length === 0) {
+      container.innerHTML = '';
+      noResults.classList.remove('hidden');
+    } else {
+      noResults.classList.add('hidden');
+      container.innerHTML = filtered.map(post => `
+        <article class="bg-white dark:bg-[#1E1E1E] rounded-lg p-5 border border-[#E5E5E5] dark:border-[#2E2E2E] transition hover:border-neutral-400 dark:hover:border-neutral-500">
+          <div class="flex items-center justify-between text-xs text-[#737373] mb-2">
+            <span class="font-semibold text-neutral-800 dark:text-neutral-200">${post.category}</span>
+            <span>${post.date}</span>
+          </div>
+          <a href="/posts/${post.slug}">
+            <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-2 hover:underline">${post.title}</h3>
+          </a>
+          <p class="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm line-clamp-2 leading-relaxed mb-4">${post.summary}</p>
+          <div class="text-xs text-[#737373] flex items-center justify-between">
+            <span>${post.readTime}</span>
+            <a href="/posts/${post.slug}" class="text-neutral-900 dark:text-white font-medium hover:underline">Read →</a>
+          </div>
+        </article>
+      `).join('');
+    }
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderPosts();
+  });
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCategory = btn.dataset.cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn px-3 py-1.5 rounded text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition");
+      btn.className = "cat-btn px-3 py-1.5 rounded bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900";
+      renderPosts();
+    });
+  });
+
+  document.getElementById('sortBtn').addEventListener('click', () => {
+    isLatestSort = !isLatestSort;
+    document.getElementById('sortLabel').innerText = isLatestSort ? "최신순" : "오래된순";
+    renderPosts();
+  });
+
+  renderPosts();
+</script>
