@@ -1,30 +1,23 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
-  return posts.map(entry => ({
-    params: { slug: entry.slug },
-    props: { entry },
+  
+  return posts.map((post) => ({
+    params: { 
+      slug: post.slug || post.id.replace(/\.[^/.]+$/, "") 
+    },
+    props: { post },
   }));
 }
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { post } = Astro.props;
+const { Content } = await render(post);
 ---
 
-<BaseLayout>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" slot="head" />
-
-  <article class="lg:col-span-8 space-y-6 bg-white dark:bg-[#1E1E1E] p-8 rounded-lg border border-[#E5E5E5] dark:border-[#2E2E2E]">
-    <div class="border-b border-[#E5E5E5] dark:border-[#2E2E2E] pb-4">
-      <span class="text-xs font-semibold text-neutral-500">{entry.data.category} • {entry.data.date}</span>
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white mt-1">{entry.data.title}</h1>
-    </div>
-
-    <div class="prose dark:prose-invert max-w-none text-sm leading-relaxed space-y-4">
-      <Content />
-    </div>
-  </article>
-</BaseLayout>
+<article>
+  <h1>{post.data.title}</h1>
+  <p>{post.data.date}</p>
+  <Content />
+</article>
