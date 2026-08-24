@@ -368,7 +368,7 @@ const {
 
               group
 
-              transition-all
+              transition-[width,max-width]
               duration-300
               ease-out
 
@@ -570,8 +570,6 @@ const {
                 pr-3
 
                 pb-6
-
-                scroll-smooth
               "
             >
 
@@ -1198,388 +1196,405 @@ const {
     /* ==================================================
        KEEP ACTIVE INDEX VISIBLE
        ================================================== */
-function keepActiveIndexVisible(
-  link,
-  behavior = 'smooth'
-) {
 
-  if (
-    !tocScroll ||
-    !link
-  ) {
-    return;
-  }
+    function keepActiveIndexVisible(
+      link,
+      behavior = 'auto'
+    ) {
 
+      if (
+        !tocScroll ||
+        !link
+      ) {
+        return;
+      }
 
-  const scrollRect =
-    tocScroll.getBoundingClientRect();
 
+      const scrollRect =
+        tocScroll.getBoundingClientRect();
 
-  const linkRect =
-    link.getBoundingClientRect();
 
+      const linkRect =
+        link.getBoundingClientRect();
 
-  /*
-   * ==================================================
-   * NORMAL TARGET
-   *
-   * 활성 Index 항목은 기본적으로
-   * Index 내부의 위쪽 20% 위치에 둔다.
-   * ==================================================
-   */
 
-  const targetOffset =
-    tocScroll.clientHeight * 0.20;
+      /*
+       * ==================================================
+       * NORMAL TARGET
+       *
+       * 활성 Index 항목은 기본적으로
+       * Index 내부의 위쪽 20% 위치에 둔다.
+       * ==================================================
+       */
 
+      const targetOffset =
+        tocScroll.clientHeight * 0.20;
 
-  const targetY =
-    scrollRect.top +
-    targetOffset;
 
+      const targetY =
+        scrollRect.top +
+        targetOffset;
 
-  /*
-   * ==================================================
-   * BOTTOM LIMIT
-   *
-   * Index 창이 댓글 영역 때문에 줄어들었을 때
-   * 활성 항목이 Index 밖으로 나가지 않도록 한다.
-   * ==================================================
-   */
 
-  const bottomPadding =
-    8;
+      /*
+       * ==================================================
+       * BOTTOM LIMIT
+       *
+       * Index 창이 댓글 영역 때문에 줄어들었을 때
+       * 활성 항목이 Index 밖으로 나가지 않도록 한다.
+       * ==================================================
+       */
 
+      const bottomPadding =
+        8;
 
-  const maxVisibleBottom =
-    scrollRect.bottom -
-    bottomPadding;
 
+      const maxVisibleBottom =
+        scrollRect.bottom -
+        bottomPadding;
 
-  /*
-   * 현재 활성 항목의 중심점
-   */
 
-  const linkCenter =
-    linkRect.top +
-    (linkRect.height / 2);
+      /*
+       * 현재 활성 항목의 중심점
+       */
 
+      const linkCenter =
+        linkRect.top +
+        (linkRect.height / 2);
 
-  /*
-   * ==================================================
-   * NORMAL DISTANCE
-   *
-   * 기본적으로는 20% 위치를 목표로 한다.
-   * ==================================================
-   */
 
-  let distance =
-    linkCenter -
-    targetY;
+      /*
+       * ==================================================
+       * NORMAL DISTANCE
+       *
+       * 기본적으로는 20% 위치를 목표로 한다.
+       * ==================================================
+       */
 
+      let distance =
+        linkCenter -
+        targetY;
 
-  /*
-   * ==================================================
-   * BOTTOM CLAMP
-   *
-   * 20% 위치로 보내면 Index 아래로 넘어가는 경우,
-   * 아래 경계에 맞도록 목표 위치를 위로 올린다.
-   * ==================================================
-   */
 
-  const linkBottom =
-    linkCenter +
-    (linkRect.height / 2);
+      /*
+       * ==================================================
+       * BOTTOM CLAMP
+       *
+       * 20% 위치로 보내면 Index 아래로 넘어가는 경우,
+       * 아래 경계에 맞도록 목표 위치를 위로 올린다.
+       * ==================================================
+       */
 
+      const linkBottom =
+        linkCenter +
+        (linkRect.height / 2);
 
-  if (
-    linkBottom >
-    maxVisibleBottom
-  ) {
 
-    const bottomDistance =
-      linkBottom -
-      maxVisibleBottom;
+      if (
+        linkBottom >
+        maxVisibleBottom
+      ) {
 
+        const bottomDistance =
+          linkBottom -
+          maxVisibleBottom;
 
-    distance =
-      Math.max(
-        distance,
-        bottomDistance
-      );
 
-  }
-
-
-  /*
-   * ==================================================
-   * TOP CLAMP
-   *
-   * Index의 위쪽 밖으로 나가는 것도 방지한다.
-   * ==================================================
-   */
-
-  const topPadding =
-    8;
-
-
-  const minVisibleTop =
-    scrollRect.top +
-    topPadding;
-
-
-  const linkTop =
-    linkCenter -
-    (linkRect.height / 2);
-
-
-  if (
-    linkTop <
-    minVisibleTop
-  ) {
-
-    const topDistance =
-      linkTop -
-      minVisibleTop;
-
-
-    distance =
-      Math.min(
-        distance,
-        topDistance
-      );
-
-  }
-
-
-  /*
-   * ==================================================
-   * DEAD ZONE
-   *
-   * 거의 같은 위치라면 불필요한 스크롤을 하지 않는다.
-   * ==================================================
-   */
-
-  const deadZone =
-    2;
-
-
-  if (
-    Math.abs(distance) <=
-    deadZone
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-   * ==================================================
-   * SCROLL LIMIT
-   * ==================================================
-   */
-
-  const maxScrollTop =
-    Math.max(
-      0,
-      tocScroll.scrollHeight -
-      tocScroll.clientHeight
-    );
-
-
-  const nextScrollTop =
-    Math.min(
-      Math.max(
-        0,
-        tocScroll.scrollTop +
-        distance
-      ),
-      maxScrollTop
-    );
-
-
-  /*
-   * 실제로 이동할 필요가 없으면 종료
-   */
-
-  if (
-    Math.abs(
-      nextScrollTop -
-      tocScroll.scrollTop
-    ) < 1
-  ) {
-
-    return;
-
-  }
-
-
-  tocScroll.scrollTo({
-
-    top:
-      nextScrollTop,
-
-    behavior
-
-  });
-
-}
-function updateTocHeight(
-  keepActive = true
-) {
-
-  if (
-    !tocSlot ||
-    !tocSidebar ||
-    !tocScroll
-  ) {
-    return;
-  }
-
-
-  if (
-    getScreenMode() === 'small'
-  ) {
-
-    tocSidebar.style.height =
-      'calc(100vh - 6rem)';
-
-    tocSidebar.style.maxHeight =
-      'calc(100vh - 6rem)';
-
-    return;
-
-  }
-
-
-  /*
-   * ==================================================
-   * SLOT POSITION / HEIGHT
-   *
-   * Index의 문서상 위치는 그대로 유지한다.
-   * 댓글에 가까워지면 사용 가능한 높이만 줄어든다.
-   * ==================================================
-   */
-
-  updateNormalSlot();
-
-
-  const slotRect =
-    tocSlot.getBoundingClientRect();
-
-
-  const stickyTop =
-    96;
-
-
-  const effectiveTop =
-    Math.max(
-      slotRect.top,
-      stickyTop
-    );
-
-
-  /*
-   * 댓글까지 남은 공간
-   */
-
-  const availableToComments =
-    slotRect.bottom -
-    effectiveTop;
-
-
-  /*
-   * 화면 아래까지 남은 공간
-   */
-
-  const availableToViewport =
-    window.innerHeight -
-    effectiveTop -
-    24;
-
-
-  /*
-   * 둘 중 작은 값 사용
-   */
-
-  let height =
-    Math.min(
-      availableToComments,
-      availableToViewport
-    );
-
-
-  /*
-   * 최소 높이
-   */
-
-  height =
-    Math.max(
-      32,
-      height
-    );
-
-
-  /*
-   * ==================================================
-   * INDEX WINDOW HEIGHT
-   *
-   * 위치는 움직이지 않는다.
-   * 오직 높이만 줄어든다.
-   * ==================================================
-   */
-
-  tocSidebar.style.height =
-    `${height}px`;
-
-  tocSidebar.style.maxHeight =
-    `${height}px`;
-
-
-  /*
-   * ==================================================
-   * ACTIVE INDEX POSITION
-   *
-   * 높이가 바뀐 후 다시 계산한다.
-   *
-   * 정상적인 경우:
-   *   → 활성 항목을 위에서 20%에 유지
-   *
-   * 공간이 부족한 경우:
-   *   → 아래쪽 경계를 넘지 않는 선까지 위로 이동
-   * ==================================================
-   */
-
-  if (
-    keepActive &&
-    isTocOpen &&
-    activeSlug
-  ) {
-
-    const activeLink =
-      tocList?.querySelector(
-        `[data-toc-link="${CSS.escape(activeSlug)}"]`
-      );
-
-
-    if (activeLink) {
-
-      requestAnimationFrame(
-        () => {
-
-          keepActiveIndexVisible(
-            activeLink,
-            'smooth'
+        distance =
+          Math.max(
+            distance,
+            bottomDistance
           );
 
-        }
-      );
+      }
+
+
+      /*
+       * ==================================================
+       * TOP CLAMP
+       *
+       * Index의 위쪽 밖으로 나가는 것도 방지한다.
+       * ==================================================
+       */
+
+      const topPadding =
+        8;
+
+
+      const minVisibleTop =
+        scrollRect.top +
+        topPadding;
+
+
+      const linkTop =
+        linkCenter -
+        (linkRect.height / 2);
+
+
+      if (
+        linkTop <
+        minVisibleTop
+      ) {
+
+        const topDistance =
+          linkTop -
+          minVisibleTop;
+
+
+        distance =
+          Math.min(
+            distance,
+            topDistance
+          );
+
+      }
+
+
+      /*
+       * ==================================================
+       * DEAD ZONE
+       *
+       * 거의 같은 위치라면 불필요한 스크롤을 하지 않는다.
+       * ==================================================
+       */
+
+      const deadZone =
+        2;
+
+
+      if (
+        Math.abs(distance) <=
+        deadZone
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+       * ==================================================
+       * SCROLL LIMIT
+       * ==================================================
+       */
+
+      const maxScrollTop =
+        Math.max(
+          0,
+          tocScroll.scrollHeight -
+          tocScroll.clientHeight
+        );
+
+
+      const nextScrollTop =
+        Math.min(
+          Math.max(
+            0,
+            tocScroll.scrollTop +
+            distance
+          ),
+          maxScrollTop
+        );
+
+
+      /*
+       * 실제로 이동할 필요가 없으면 종료
+       */
+
+      if (
+        Math.abs(
+          nextScrollTop -
+          tocScroll.scrollTop
+        ) < 1
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+       * ==================================================
+       * SCROLL
+       *
+       * 일반 페이지 스크롤:
+       *   behavior = auto
+       *
+       * Index 직접 클릭:
+       *   behavior = smooth
+       * ==================================================
+       */
+
+      tocScroll.scrollTo({
+
+        top:
+          nextScrollTop,
+
+        behavior
+
+      });
 
     }
 
-  }
 
-}
+    /* ==================================================
+       UPDATE TOC HEIGHT
+       ================================================== */
+
+    function updateTocHeight(
+      keepActive = true
+    ) {
+
+      if (
+        !tocSlot ||
+        !tocSidebar ||
+        !tocScroll
+      ) {
+        return;
+      }
+
+
+      if (
+        getScreenMode() === 'small'
+      ) {
+
+        tocSidebar.style.height =
+          'calc(100vh - 6rem)';
+
+        tocSidebar.style.maxHeight =
+          'calc(100vh - 6rem)';
+
+        return;
+
+      }
+
+
+      /*
+       * ==================================================
+       * SLOT POSITION / HEIGHT
+       *
+       * Index의 문서상 위치는 그대로 유지한다.
+       * 댓글에 가까워지면 사용 가능한 높이만 줄어든다.
+       * ==================================================
+       */
+
+      updateNormalSlot();
+
+
+      const slotRect =
+        tocSlot.getBoundingClientRect();
+
+
+      const stickyTop =
+        96;
+
+
+      const effectiveTop =
+        Math.max(
+          slotRect.top,
+          stickyTop
+        );
+
+
+      /*
+       * 댓글까지 남은 공간
+       */
+
+      const availableToComments =
+        slotRect.bottom -
+        effectiveTop;
+
+
+      /*
+       * 화면 아래까지 남은 공간
+       */
+
+      const availableToViewport =
+        window.innerHeight -
+        effectiveTop -
+        24;
+
+
+      /*
+       * 둘 중 작은 값 사용
+       */
+
+      let height =
+        Math.min(
+          availableToComments,
+          availableToViewport
+        );
+
+
+      /*
+       * 최소 높이
+       */
+
+      height =
+        Math.max(
+          32,
+          height
+        );
+
+
+      /*
+       * ==================================================
+       * INDEX WINDOW HEIGHT
+       *
+       * 위치는 움직이지 않는다.
+       * 오직 높이만 줄어든다.
+       *
+       * tocSidebar에는 height transition이 없으므로
+       * 이 값은 즉시 적용된다.
+       * ==================================================
+       */
+
+      tocSidebar.style.height =
+        `${height}px`;
+
+      tocSidebar.style.maxHeight =
+        `${height}px`;
+
+
+      /*
+       * ==================================================
+       * ACTIVE INDEX POSITION
+       *
+       * height 변경 직후 즉시 계산한다.
+       *
+       * 정상적인 경우:
+       *   → 활성 항목을 위에서 20%에 유지
+       *
+       * 공간이 부족한 경우:
+       *   → 아래쪽 경계를 넘지 않는 선까지 위로 이동
+       * ==================================================
+       */
+
+      if (
+        keepActive &&
+        isTocOpen &&
+        activeSlug
+      ) {
+
+        const activeLink =
+          tocList?.querySelector(
+            `[data-toc-link="${CSS.escape(activeSlug)}"]`
+          );
+
+
+        if (activeLink) {
+
+          keepActiveIndexVisible(
+            activeLink,
+            'auto'
+          );
+
+        }
+
+      }
+
+    }
+
 
     /* ==================================================
        ARROW
@@ -1738,7 +1753,8 @@ function updateTocHeight(
         if (sameLink) {
 
           keepActiveIndexVisible(
-            sameLink
+            sameLink,
+            'auto'
           );
 
         }
@@ -1784,7 +1800,8 @@ function updateTocHeight(
       ) {
 
         keepActiveIndexVisible(
-          link
+          link,
+          'auto'
         );
 
       }
@@ -2010,7 +2027,8 @@ function updateTocHeight(
 
 
       setActiveIndex(
-        slug
+        slug,
+        true
       );
 
     }
@@ -2234,7 +2252,8 @@ function updateTocHeight(
           if (link) {
 
             keepActiveIndexVisible(
-              link
+              link,
+              'smooth'
             );
 
           }
