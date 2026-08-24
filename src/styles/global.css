@@ -1,1 +1,424 @@
 @import "tailwindcss";
+
+
+/* ==================================================
+   DARK MODE
+   ================================================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+/* ==================================================
+   PRETENDARD
+   ================================================== */
+
+@font-face {
+
+  font-family: "Pretendard";
+
+  src:
+    url("/fonts/Pretendard-Regular.ttf")
+    format("ttf");
+
+  font-weight: 400;
+
+  font-style: normal;
+
+  font-display: swap;
+
+}
+
+
+@font-face {
+
+  font-family: "Pretendard";
+
+  src:
+    url("/fonts/Pretendard-Bold.ttf")
+    format("ttf");
+
+  font-weight: 700;
+
+  font-style: normal;
+
+  font-display: swap;
+
+}
+
+
+@font-face {
+
+  font-family: "Pretendard";
+
+  src:
+    url("/fonts/Pretendard-ExtraBold.ttf")
+    format("ttf");
+
+  font-weight: 800;
+
+  font-style: normal;
+
+  font-display: swap;
+
+}
+
+
+/* ==================================================
+   LATIN MODERN MATH
+   ================================================== */
+
+@font-face {
+
+  font-family: "Latin Modern Math";
+
+  src:
+    url("/fonts/latinmodern-math.otf")
+    format("opentype");
+
+  font-weight: 400;
+
+  font-style: normal;
+
+  font-display: swap;
+
+}
+
+
+/* ==================================================
+   GLOBAL FONT
+   ================================================== */
+
+html,
+body {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+}
+
+
+/* ==================================================
+   ARTICLE
+   ================================================== */
+
+#articleContent {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-weight: 400;
+
+}
+
+
+/* ==================================================
+   ARTICLE HEADINGS
+   ================================================== */
+
+/*
+ * ## 제목
+ */
+
+#articleContent h2 {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 1.5rem;
+
+  line-height: 1.35;
+
+  font-weight: 700;
+
+}
+
+
+/*
+ * ### 제목
+ */
+
+#articleContent h3 {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 1.25rem;
+
+  line-height: 1.4;
+
+  font-weight: 700;
+
+}
+
+
+/*
+ * #### 제목
+ */
+
+#articleContent h4 {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 1.125rem;
+
+  line-height: 1.45;
+
+  font-weight: 700;
+
+}
+
+
+/* ==================================================
+   ARTICLE BODY
+   ================================================== */
+
+#articleContent p,
+#articleContent li {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 1rem;
+
+  line-height: 1.8;
+
+  font-weight: 400;
+
+}
+
+
+/* ==================================================
+   ARTICLE STRONG / BOLD
+   ================================================== */
+
+#articleContent strong,
+#articleContent b {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-weight: 700;
+
+}
+
+
+/* ==================================================
+   POST TITLE
+   ================================================== */
+
+#post-title {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 2rem;
+
+  line-height: 1.25;
+
+  font-weight: 800;
+
+}
+
+
+/* ==================================================
+   INDEX
+   ================================================== */
+
+#tocSidebar {
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+}
+
+
+/* ==================================================
+   KATEX / MATH
+   ================================================== */
+
+/*
+ * 모든 KaTeX 수식은
+ * Latin Modern Math를 사용한다.
+ *
+ * 일반 본문은 Pretendard를 유지한다.
+ */
+
+.katex,
+.katex-display,
+.katex-display .katex {
+
+  font-family:
+    "Latin Modern Math",
+    serif;
+
+}
+
+
+/*
+ * KaTeX 내부의 수식 요소도
+ * Latin Modern Math를 사용한다.
+ */
+
+.katex .mathnormal,
+.katex .mathrm,
+.katex .mathbf,
+.katex .mathit,
+.katex .mathbb,
+.katex .mathsf,
+.katex .mathtt,
+.katex .mathfrak {
+
+  font-family:
+    "Latin Modern Math",
+    serif;
+
+}
+
+
+/* ==================================================
+   CODE
+   ================================================== */
+
+#articleContent code,
+#articleContent pre {
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+
+}
+
+
+/* ==================================================
+   COMMON PANEL
+   ================================================== */
+
+[data-responsive-panel] {
+
+  position: relative;
+
+  flex-shrink: 1;
+
+  transition:
+
+    width 300ms ease,
+
+    max-width 300ms ease,
+
+    transform 300ms ease;
+
+}
+
+
+/* ==================================================
+   PANEL HANDLE
+   ================================================== */
+
+[data-panel-handle] {
+
+  position: absolute;
+
+  left: 0;
+
+  top: 0;
+
+  bottom: 0;
+
+  width: 2rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 20;
+
+  cursor: pointer;
+
+  user-select: none;
+
+}
+
+
+/* ==================================================
+   PANEL ICON
+   ================================================== */
+
+[data-panel-icon] {
+
+  pointer-events: none;
+
+  user-select: none;
+
+}
+
+
+/* ==================================================
+   MOBILE OVERLAY
+   ================================================== */
+
+#panelOverlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 50;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  backdrop-filter: blur(4px);
+
+  -webkit-backdrop-filter: blur(4px);
+
+  transition:
+
+    opacity 250ms ease;
+
+}
+
+
+#panelOverlay.hidden {
+
+  display: none;
+
+}
+
+
+/* ==================================================
+   HEADER AUTO HIDE
+   ================================================== */
+
+.site-header {
+
+  transform: translateY(0);
+
+  transition:
+
+    transform 250ms ease;
+
+}
+
+
+.site-header.header-hidden {
+
+  transform: translateY(-100%);
+
+}

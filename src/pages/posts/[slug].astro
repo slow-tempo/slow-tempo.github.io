@@ -1,23 +1,3111 @@
 ---
 import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+
+/* ==================================================
+   STATIC PATHS
+   ================================================== */
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
-  
+
+  const posts =
+    await getCollection('posts');
+
   return posts.map((post) => ({
-    params: { 
-      slug: post.slug || post.id.replace(/\.[^/.]+$/, "") 
+
+    params: {
+      slug:
+        post.slug ||
+        post.id.replace(
+          /\.[^/.]+$/,
+          ''
+        )
     },
-    props: { post },
+
+    props: {
+      post
+    }
+
   }));
+
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+
+/* ==================================================
+   POST DATA
+   ================================================== */
+
+const { post } =
+  Astro.props;
+
+
+const {
+  Content,
+  headings
+} =
+  await render(post);
+
 ---
 
-<article>
-  <h1>{post.data.title}</h1>
-  <p>{post.data.date}</p>
-  <Content />
-</article>
+
+<BaseLayout title={post.data.title}>
+
+
+  <!-- ==================================================
+       KaTeX
+       ================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+    slot="head"
+  />
+
+
+  <!-- ==================================================
+       PAGE CONTAINER
+       ================================================== -->
+
+  <div
+    class="
+      max-w-6xl
+      mx-auto
+
+      px-4
+      sm:px-6
+
+      py-8
+
+      w-full
+    "
+  >
+
+
+    <!-- ==================================================
+         MAIN + INDEX
+         ================================================== -->
+
+    <div
+      id="postLayout"
+
+      class="
+        flex
+        items-start
+
+        justify-center
+
+        gap-4
+
+        w-full
+
+        min-w-0
+      "
+    >
+
+
+      <!-- ==================================================
+           ARTICLE
+           ================================================== -->
+
+      <main
+        id="postMain"
+
+        class="
+          flex-none
+          min-w-0
+
+          w-[820px]
+          max-w-full
+
+          bg-white
+          dark:bg-[#1E1E1E]
+
+          p-6
+          sm:p-10
+
+          rounded-2xl
+
+          border
+          border-[#E5E5E5]
+          dark:border-[#2E2E2E]
+
+          shadow-sm
+
+          z-10
+        "
+      >
+
+
+        <!-- ==================================================
+             POST HEADER
+             ================================================== -->
+
+        <header
+          id="postHeader"
+
+          class="
+            pb-6
+            mb-8
+
+            border-b
+
+            border-[#E5E5E5]
+            dark:border-[#2E2E2E]
+          "
+        >
+
+          <div
+            class="
+              flex
+              items-center
+              gap-2
+
+              text-xs
+              font-semibold
+
+              text-neutral-500
+              dark:text-neutral-400
+
+              mb-2
+            "
+          >
+
+            <span
+              class="
+                px-2.5
+                py-1
+
+                rounded-md
+
+                bg-neutral-100
+                dark:bg-neutral-800
+
+                text-neutral-800
+                dark:text-neutral-200
+              "
+            >
+              {post.data.category}
+            </span>
+
+
+            <span>
+              •
+            </span>
+
+
+            <time>
+              {post.data.date}
+            </time>
+
+          </div>
+
+
+          <h1
+            id="post-title"
+
+            class="
+              text-xl
+              sm:text-3xl
+
+              font-extrabold
+
+              text-neutral-900
+              dark:text-white
+
+              tracking-tight
+
+              leading-tight
+
+              mt-3
+
+              scroll-mt-24
+            "
+          >
+            {post.data.title}
+          </h1>
+
+        </header>
+
+
+        <!-- ==================================================
+             ARTICLE CONTENT
+             ================================================== -->
+
+        <article
+          id="articleContent"
+
+          class="
+            prose
+
+            dark:prose-invert
+
+            max-w-none
+
+            text-neutral-800
+            dark:text-neutral-200
+
+            text-sm
+            sm:text-base
+
+            leading-relaxed
+
+            space-y-4
+          "
+        >
+
+          <Content />
+
+        </article>
+
+
+        <!-- ==================================================
+             COMMENTS
+             ================================================== -->
+
+        <section
+          id="comments"
+
+          class="
+            mt-12
+            pt-8
+
+            border-t
+
+            border-[#E5E5E5]
+            dark:border-[#2E2E2E]
+          "
+        >
+
+          <h3
+            class="
+              text-lg
+              font-bold
+
+              text-neutral-900
+              dark:text-white
+
+              mb-4
+            "
+          >
+            댓글
+          </h3>
+
+
+          <p
+            class="
+              text-xs
+
+              text-neutral-500
+              dark:text-neutral-400
+            "
+          >
+            GitHub 계정으로 댓글을 남길 수 있습니다.
+          </p>
+
+        </section>
+
+      </main>
+
+
+
+      <!-- ==================================================
+           INDEX SLOT
+           ================================================== -->
+
+      {headings.length > 0 && (
+
+        <div
+          id="tocSlot"
+
+          class="
+            shrink-0
+
+            w-[280px]
+
+            relative
+          "
+        >
+
+
+          <!-- ==================================================
+               INDEX
+               ================================================== -->
+
+          <aside
+            id="tocSidebar"
+
+            class="
+              shrink-0
+
+              w-[280px]
+              max-w-[280px]
+
+              sticky
+              top-24
+
+              bg-white
+              dark:bg-[#1E1E1E]
+
+              rounded-2xl
+
+              border
+              border-[#E5E5E5]
+              dark:border-[#2E2E2E]
+
+              shadow-sm
+
+              text-xs
+
+              relative
+
+              overflow-hidden
+
+              flex
+              flex-col
+
+              min-h-0
+
+              group
+
+              transition-all
+              duration-300
+              ease-out
+
+              z-[60]
+            "
+          >
+
+
+            <!-- ==================================================
+                 HANDLE
+                 ================================================== -->
+
+            <button
+              id="tocHandle"
+
+              type="button"
+
+              aria-label="목차 접기/펼치기"
+
+              class="
+                absolute
+
+                left-0
+                top-0
+                bottom-0
+
+                w-8
+
+                flex
+                items-center
+                justify-center
+
+                z-20
+
+                bg-neutral-50/50
+                dark:bg-neutral-800/30
+
+                group-hover:bg-neutral-200/60
+                dark:group-hover:bg-neutral-700/60
+
+                transition-colors
+                duration-200
+
+                border-r
+
+                border-[#E5E5E5]/50
+                dark:border-[#2E2E2E]/50
+
+                cursor-pointer
+              "
+            >
+
+
+              <!-- ==================================================
+                   LEFT ARROW
+                   ================================================== -->
+
+              <svg
+                id="tocArrowLeft"
+
+                xmlns="http://www.w3.org/2000/svg"
+
+                viewBox="0 0 24 24"
+
+                fill="none"
+
+                stroke="currentColor"
+
+                stroke-width="3"
+
+                stroke-linecap="round"
+
+                stroke-linejoin="round"
+
+                class="
+                  w-4
+                  h-4
+
+                  text-neutral-800
+                  dark:text-neutral-100
+                "
+              >
+
+                <path
+                  d="M15 18l-6-6 6-6"
+                />
+
+              </svg>
+
+
+              <!-- ==================================================
+                   RIGHT ARROW
+                   ================================================== -->
+
+              <svg
+                id="tocArrowRight"
+
+                xmlns="http://www.w3.org/2000/svg"
+
+                viewBox="0 0 24 24"
+
+                fill="none"
+
+                stroke="currentColor"
+
+                stroke-width="3"
+
+                stroke-linecap="round"
+
+                stroke-linejoin="round"
+
+                class="
+                  hidden
+
+                  w-4
+                  h-4
+
+                  text-neutral-800
+                  dark:text-neutral-100
+                "
+              >
+
+                <path
+                  d="M9 18l6-6-6-6"
+                />
+
+              </svg>
+
+            </button>
+
+
+            <!-- ==================================================
+                 INDEX TITLE
+                 고정 영역
+                 ================================================== -->
+
+            <div
+              class="
+                shrink-0
+
+                px-6
+                pl-10
+                pr-3
+
+                pt-6
+                pb-3
+              "
+            >
+
+              <nav>
+
+                <h2
+                  class="
+                    font-bold
+
+                    text-neutral-900
+                    dark:text-white
+
+                    text-[18px]
+
+                    pb-2
+
+                    border-b
+
+                    border-neutral-100
+                    dark:border-neutral-800
+                  "
+                >
+                  Index
+                </h2>
+
+              </nav>
+
+            </div>
+
+
+            <!-- ==================================================
+                 INDEX SCROLL AREA
+                 여기부터만 스크롤
+                 ================================================== -->
+
+            <div
+              id="tocScroll"
+
+              class="
+                toc-scroll
+
+                w-full
+
+                flex-1
+                min-h-0
+
+                overflow-y-auto
+                overflow-x-hidden
+
+                px-6
+                pl-10
+
+                pr-3
+
+                pb-6
+
+                scroll-smooth
+              "
+            >
+
+              <nav>
+
+                <ul
+                  id="tocList"
+
+                  class="
+                    space-y-2.5
+
+                    pr-1
+                  "
+                >
+
+
+                  <!-- ==================================================
+                       POST TITLE
+                       ================================================== -->
+
+                  <li
+                    data-toc-item="post-title"
+
+                    class="toc-item"
+                  >
+
+                    <a
+                      href="#post-title"
+
+                      data-toc-link="post-title"
+
+                      class="
+                        block
+                        truncate
+
+                        transition-all
+                        duration-200
+
+                        text-neutral-500
+                        dark:text-neutral-400
+
+                        hover:text-neutral-900
+                        dark:hover:text-white
+
+                        hover:underline
+                      "
+                    >
+                      {post.data.title}
+                    </a>
+
+                  </li>
+
+
+                  <!-- ==================================================
+                       HEADINGS
+                       ================================================== -->
+
+                  {headings.map((h) => (
+
+                    <li
+                      data-toc-item={h.slug}
+
+                      class="toc-item"
+
+                      style={{
+                        paddingLeft:
+                          `${Math.max(
+                            0,
+                            h.depth - 2
+                          ) * 10}px`
+                      }}
+                    >
+
+                      <a
+                        href={`#${h.slug}`}
+
+                        data-toc-link={h.slug}
+
+                        class="
+                          block
+                          truncate
+
+                          transition-all
+                          duration-200
+
+                          text-neutral-500
+                          dark:text-neutral-400
+
+                          hover:text-neutral-900
+                          dark:hover:text-white
+
+                          hover:underline
+                        "
+                      >
+                        {h.text}
+                      </a>
+
+                    </li>
+
+                  ))}
+
+                </ul>
+
+              </nav>
+
+            </div>
+
+
+          </aside>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ==================================================
+       OVERLAY
+       ================================================== -->
+
+  {headings.length > 0 && (
+
+    <div
+      id="tocOverlay"
+
+      class="
+        fixed
+        inset-0
+
+        z-[55]
+
+        bg-black/40
+
+        backdrop-blur-sm
+
+        opacity-0
+
+        pointer-events-none
+
+        transition-opacity
+        duration-300
+      "
+    ></div>
+
+  )}
+
+
+
+  <!-- ==================================================
+       SCRIPT
+       ================================================== -->
+
+  <script is:inline>
+
+    /* ==================================================
+       ELEMENTS
+       ================================================== */
+
+    const tocSidebar =
+      document.getElementById(
+        'tocSidebar'
+      );
+
+    const tocSlot =
+      document.getElementById(
+        'tocSlot'
+      );
+
+    const tocScroll =
+      document.getElementById(
+        'tocScroll'
+      );
+
+    const tocList =
+      document.getElementById(
+        'tocList'
+      );
+
+    const tocHandle =
+      document.getElementById(
+        'tocHandle'
+      );
+
+    const tocArrowLeft =
+      document.getElementById(
+        'tocArrowLeft'
+      );
+
+    const tocArrowRight =
+      document.getElementById(
+        'tocArrowRight'
+      );
+
+    const tocOverlay =
+      document.getElementById(
+        'tocOverlay'
+      );
+
+    const postLayout =
+      document.getElementById(
+        'postLayout'
+      );
+
+    const postMain =
+      document.getElementById(
+        'postMain'
+      );
+
+    const postHeader =
+      document.getElementById(
+        'postHeader'
+      );
+
+    const postTitle =
+      document.getElementById(
+        'post-title'
+      );
+
+    const articleContent =
+      document.getElementById(
+        'articleContent'
+      );
+
+    const comments =
+      document.getElementById(
+        'comments'
+      );
+
+
+    /* ==================================================
+       STATE
+       ================================================== */
+
+    let isTocOpen =
+      true;
+
+    let isOverlayMode =
+      false;
+
+    let activeSlug =
+      'post-title';
+
+    let observer =
+      null;
+
+    let scrollTicking =
+      false;
+
+    let resizeTimer =
+      null;
+
+
+    /* ==================================================
+       SCREEN MODE
+       ================================================== */
+
+    function getScreenMode() {
+
+      const width =
+        window.innerWidth;
+
+
+      if (width >= 1200) {
+
+        return 'large';
+
+      }
+
+
+      if (width >= 1100) {
+
+        return 'medium';
+
+      }
+
+
+      return 'small';
+
+    }
+
+
+    /* ==================================================
+       CONTENT SHOW
+       ================================================== */
+
+    function showContent() {
+
+      if (!tocScroll) {
+        return;
+      }
+
+
+      tocScroll.style.opacity =
+        '1';
+
+      tocScroll.style.pointerEvents =
+        'auto';
+
+    }
+
+
+    /* ==================================================
+       CONTENT HIDE
+       ================================================== */
+
+    function hideContent() {
+
+      if (!tocScroll) {
+        return;
+      }
+
+
+      tocScroll.style.opacity =
+        '0';
+
+      tocScroll.style.pointerEvents =
+        'none';
+
+    }
+
+
+    /* ==================================================
+       OVERLAY SHOW
+       ================================================== */
+
+    function showOverlay() {
+
+      if (!tocOverlay) {
+        return;
+      }
+
+
+      tocOverlay.classList.remove(
+        'opacity-0',
+        'pointer-events-none'
+      );
+
+
+      tocOverlay.classList.add(
+        'opacity-100',
+        'pointer-events-auto'
+      );
+
+
+      document.body.style.overflow =
+        'hidden';
+
+    }
+
+
+    /* ==================================================
+       OVERLAY HIDE
+       ================================================== */
+
+    function hideOverlay() {
+
+      if (!tocOverlay) {
+        return;
+      }
+
+
+      tocOverlay.classList.remove(
+        'opacity-100',
+        'pointer-events-auto'
+      );
+
+
+      tocOverlay.classList.add(
+        'opacity-0',
+        'pointer-events-none'
+      );
+
+
+      document.body.style.overflow =
+        '';
+
+    }
+
+
+    /* ==================================================
+       NORMAL POSITION
+       ================================================== */
+
+    function restoreNormalPosition() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      tocSidebar.style.position =
+        '';
+
+      tocSidebar.style.top =
+        '';
+
+      tocSidebar.style.right =
+        '';
+
+      tocSidebar.style.bottom =
+        '';
+
+      tocSidebar.style.height =
+        '';
+
+      tocSidebar.style.maxHeight =
+        '';
+
+      tocSidebar.style.zIndex =
+        '60';
+
+    }
+
+
+    /* ==================================================
+       GET MEDIUM INDEX WIDTH
+       ================================================== */
+
+    function getMediumIndexWidth() {
+
+      const pagePadding =
+        window.innerWidth >= 640
+          ? 48
+          : 32;
+
+
+      const mainWidth =
+        820;
+
+
+      const gap =
+        16;
+
+
+      const available =
+        window.innerWidth
+        -
+        pagePadding
+        -
+        mainWidth
+        -
+        gap;
+
+
+      return Math.max(
+        180,
+        Math.min(
+          280,
+          available
+        )
+      );
+
+    }
+
+
+    /* ==================================================
+       RESET NORMAL SLOT
+       ================================================== */
+
+    function resetNormalSlot() {
+
+      if (!tocSlot) {
+        return;
+      }
+
+
+      tocSlot.style.width =
+        '';
+
+      tocSlot.style.height =
+        '';
+
+      tocSlot.style.marginTop =
+        '';
+
+      tocSlot.style.flex =
+        '';
+
+    }
+
+
+    /* ==================================================
+       UPDATE NORMAL SLOT
+       ================================================== */
+
+    function updateNormalSlot() {
+
+      if (
+        !tocSlot ||
+        !tocSidebar ||
+        !postMain ||
+        !postHeader ||
+        !comments
+      ) {
+        return;
+      }
+
+
+      const mode =
+        getScreenMode();
+
+
+      if (
+        mode === 'small'
+      ) {
+
+        return;
+
+      }
+
+
+      const mainRect =
+        postMain.getBoundingClientRect();
+
+
+      const headerRect =
+        postHeader.getBoundingClientRect();
+
+
+      const commentsRect =
+        comments.getBoundingClientRect();
+
+
+      const headerStyle =
+        window.getComputedStyle(
+          postHeader
+        );
+
+
+      const headerMarginBottom =
+        parseFloat(
+          headerStyle.marginBottom
+        ) || 0;
+
+
+      const mainTop =
+        mainRect.top
+        +
+        window.scrollY;
+
+
+      const headerBottom =
+        headerRect.bottom
+        +
+        window.scrollY;
+
+
+      const commentsTop =
+        commentsRect.top
+        +
+        window.scrollY;
+
+
+      // Move the Index upward relative to the header bottom
+      const indexOffset =
+        88;
+
+
+      const slotTop =
+        headerBottom
+        -
+        indexOffset
+        +
+        headerMarginBottom;
+
+
+      const marginTop =
+        Math.max(
+          0,
+          slotTop - mainTop
+        );
+
+
+      const slotHeight =
+        Math.max(
+          0,
+          commentsTop - slotTop
+        );
+
+
+      /*
+       * IMPORTANT
+       *
+       * The Index SLOT itself stays in the same
+       * document position.
+       *
+       * Only its available HEIGHT changes.
+       *
+       * The internal tocScroll is responsible
+       * for moving the Index items.
+       */
+
+      tocSlot.style.marginTop =
+        `${marginTop}px`;
+
+
+      tocSlot.style.height =
+        `${slotHeight}px`;
+
+
+      if (
+        mode === 'large'
+      ) {
+
+        tocSlot.style.width =
+          '280px';
+
+      }
+
+      else {
+
+        tocSlot.style.width =
+          `${getMediumIndexWidth()}px`;
+
+      }
+
+    }
+
+
+    /* ==================================================
+       KEEP ACTIVE INDEX VISIBLE
+       ================================================== */
+function keepActiveIndexVisible(
+  link,
+  behavior = 'smooth'
+) {
+
+  if (
+    !tocScroll ||
+    !link
+  ) {
+    return;
+  }
+
+
+  const scrollRect =
+    tocScroll.getBoundingClientRect();
+
+
+  const linkRect =
+    link.getBoundingClientRect();
+
+
+  /*
+   * ==================================================
+   * NORMAL TARGET
+   *
+   * 활성 Index 항목은 기본적으로
+   * Index 내부의 위쪽 20% 위치에 둔다.
+   * ==================================================
+   */
+
+  const targetOffset =
+    tocScroll.clientHeight * 0.20;
+
+
+  const targetY =
+    scrollRect.top +
+    targetOffset;
+
+
+  /*
+   * ==================================================
+   * BOTTOM LIMIT
+   *
+   * Index 창이 댓글 영역 때문에 줄어들었을 때
+   * 활성 항목이 Index 밖으로 나가지 않도록 한다.
+   * ==================================================
+   */
+
+  const bottomPadding =
+    8;
+
+
+  const maxVisibleBottom =
+    scrollRect.bottom -
+    bottomPadding;
+
+
+  /*
+   * 현재 활성 항목의 중심점
+   */
+
+  const linkCenter =
+    linkRect.top +
+    (linkRect.height / 2);
+
+
+  /*
+   * ==================================================
+   * NORMAL DISTANCE
+   *
+   * 기본적으로는 20% 위치를 목표로 한다.
+   * ==================================================
+   */
+
+  let distance =
+    linkCenter -
+    targetY;
+
+
+  /*
+   * ==================================================
+   * BOTTOM CLAMP
+   *
+   * 20% 위치로 보내면 Index 아래로 넘어가는 경우,
+   * 아래 경계에 맞도록 목표 위치를 위로 올린다.
+   * ==================================================
+   */
+
+  const linkBottom =
+    linkCenter +
+    (linkRect.height / 2);
+
+
+  if (
+    linkBottom >
+    maxVisibleBottom
+  ) {
+
+    const bottomDistance =
+      linkBottom -
+      maxVisibleBottom;
+
+
+    distance =
+      Math.max(
+        distance,
+        bottomDistance
+      );
+
+  }
+
+
+  /*
+   * ==================================================
+   * TOP CLAMP
+   *
+   * Index의 위쪽 밖으로 나가는 것도 방지한다.
+   * ==================================================
+   */
+
+  const topPadding =
+    8;
+
+
+  const minVisibleTop =
+    scrollRect.top +
+    topPadding;
+
+
+  const linkTop =
+    linkCenter -
+    (linkRect.height / 2);
+
+
+  if (
+    linkTop <
+    minVisibleTop
+  ) {
+
+    const topDistance =
+      linkTop -
+      minVisibleTop;
+
+
+    distance =
+      Math.min(
+        distance,
+        topDistance
+      );
+
+  }
+
+
+  /*
+   * ==================================================
+   * DEAD ZONE
+   *
+   * 거의 같은 위치라면 불필요한 스크롤을 하지 않는다.
+   * ==================================================
+   */
+
+  const deadZone =
+    2;
+
+
+  if (
+    Math.abs(distance) <=
+    deadZone
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+   * ==================================================
+   * SCROLL LIMIT
+   * ==================================================
+   */
+
+  const maxScrollTop =
+    Math.max(
+      0,
+      tocScroll.scrollHeight -
+      tocScroll.clientHeight
+    );
+
+
+  const nextScrollTop =
+    Math.min(
+      Math.max(
+        0,
+        tocScroll.scrollTop +
+        distance
+      ),
+      maxScrollTop
+    );
+
+
+  /*
+   * 실제로 이동할 필요가 없으면 종료
+   */
+
+  if (
+    Math.abs(
+      nextScrollTop -
+      tocScroll.scrollTop
+    ) < 1
+  ) {
+
+    return;
+
+  }
+
+
+  tocScroll.scrollTo({
+
+    top:
+      nextScrollTop,
+
+    behavior
+
+  });
+
+}
+function updateTocHeight(
+  keepActive = true
+) {
+
+  if (
+    !tocSlot ||
+    !tocSidebar ||
+    !tocScroll
+  ) {
+    return;
+  }
+
+
+  if (
+    getScreenMode() === 'small'
+  ) {
+
+    tocSidebar.style.height =
+      'calc(100vh - 6rem)';
+
+    tocSidebar.style.maxHeight =
+      'calc(100vh - 6rem)';
+
+    return;
+
+  }
+
+
+  /*
+   * ==================================================
+   * SLOT POSITION / HEIGHT
+   *
+   * Index의 문서상 위치는 그대로 유지한다.
+   * 댓글에 가까워지면 사용 가능한 높이만 줄어든다.
+   * ==================================================
+   */
+
+  updateNormalSlot();
+
+
+  const slotRect =
+    tocSlot.getBoundingClientRect();
+
+
+  const stickyTop =
+    96;
+
+
+  const effectiveTop =
+    Math.max(
+      slotRect.top,
+      stickyTop
+    );
+
+
+  /*
+   * 댓글까지 남은 공간
+   */
+
+  const availableToComments =
+    slotRect.bottom -
+    effectiveTop;
+
+
+  /*
+   * 화면 아래까지 남은 공간
+   */
+
+  const availableToViewport =
+    window.innerHeight -
+    effectiveTop -
+    24;
+
+
+  /*
+   * 둘 중 작은 값 사용
+   */
+
+  let height =
+    Math.min(
+      availableToComments,
+      availableToViewport
+    );
+
+
+  /*
+   * 최소 높이
+   */
+
+  height =
+    Math.max(
+      32,
+      height
+    );
+
+
+  /*
+   * ==================================================
+   * INDEX WINDOW HEIGHT
+   *
+   * 위치는 움직이지 않는다.
+   * 오직 높이만 줄어든다.
+   * ==================================================
+   */
+
+  tocSidebar.style.height =
+    `${height}px`;
+
+  tocSidebar.style.maxHeight =
+    `${height}px`;
+
+
+  /*
+   * ==================================================
+   * ACTIVE INDEX POSITION
+   *
+   * 높이가 바뀐 후 다시 계산한다.
+   *
+   * 정상적인 경우:
+   *   → 활성 항목을 위에서 20%에 유지
+   *
+   * 공간이 부족한 경우:
+   *   → 아래쪽 경계를 넘지 않는 선까지 위로 이동
+   * ==================================================
+   */
+
+  if (
+    keepActive &&
+    isTocOpen &&
+    activeSlug
+  ) {
+
+    const activeLink =
+      tocList?.querySelector(
+        `[data-toc-link="${CSS.escape(activeSlug)}"]`
+      );
+
+
+    if (activeLink) {
+
+      requestAnimationFrame(
+        () => {
+
+          keepActiveIndexVisible(
+            activeLink,
+            'smooth'
+          );
+
+        }
+      );
+
+    }
+
+  }
+
+}
+
+    /* ==================================================
+       ARROW
+       ================================================== */
+
+    function updateArrow() {
+
+      if (
+        !tocArrowLeft ||
+        !tocArrowRight
+      ) {
+        return;
+      }
+
+
+      const mode =
+        getScreenMode();
+
+
+      if (
+        mode === 'small'
+      ) {
+
+        if (
+          isOverlayMode
+        ) {
+
+          tocArrowLeft.classList.add(
+            'hidden'
+          );
+
+          tocArrowRight.classList.remove(
+            'hidden'
+          );
+
+        }
+
+        else {
+
+          tocArrowLeft.classList.remove(
+            'hidden'
+          );
+
+          tocArrowRight.classList.add(
+            'hidden'
+          );
+
+        }
+
+        return;
+
+      }
+
+
+      if (
+        isTocOpen
+      ) {
+
+        tocArrowLeft.classList.remove(
+          'hidden'
+        );
+
+        tocArrowRight.classList.add(
+          'hidden'
+        );
+
+      }
+
+      else {
+
+        tocArrowLeft.classList.add(
+          'hidden'
+        );
+
+        tocArrowRight.classList.remove(
+          'hidden'
+        );
+
+      }
+
+    }
+
+
+    /* ==================================================
+       CLEAR ACTIVE
+       ================================================== */
+
+    function clearActiveIndex() {
+
+      if (!tocList) {
+        return;
+      }
+
+
+      const links =
+        tocList.querySelectorAll(
+          '[data-toc-link]'
+        );
+
+
+      links.forEach(
+        (link) => {
+
+          link.classList.remove(
+            'font-bold',
+            'text-neutral-900',
+            'dark:text-white'
+          );
+
+
+          link.classList.add(
+            'text-neutral-500',
+            'dark:text-neutral-400'
+          );
+
+        }
+      );
+
+    }
+
+
+    /* ==================================================
+       SET ACTIVE INDEX
+       ================================================== */
+
+    function setActiveIndex(
+      slug,
+      autoScroll = true
+    ) {
+
+      if (!tocList) {
+        return;
+      }
+
+
+      if (!slug) {
+
+        slug =
+          'post-title';
+
+      }
+
+
+      if (
+        activeSlug === slug
+        &&
+        autoScroll
+      ) {
+
+        const sameLink =
+          tocList.querySelector(
+            `[data-toc-link="${CSS.escape(slug)}"]`
+          );
+
+
+        if (sameLink) {
+
+          keepActiveIndexVisible(
+            sameLink
+          );
+
+        }
+
+        return;
+
+      }
+
+
+      activeSlug =
+        slug;
+
+
+      clearActiveIndex();
+
+
+      const link =
+        tocList.querySelector(
+          `[data-toc-link="${CSS.escape(slug)}"]`
+        );
+
+
+      if (!link) {
+        return;
+      }
+
+
+      link.classList.remove(
+        'text-neutral-500',
+        'dark:text-neutral-400'
+      );
+
+
+      link.classList.add(
+        'font-bold',
+        'text-neutral-900',
+        'dark:text-white'
+      );
+
+
+      if (
+        autoScroll
+      ) {
+
+        keepActiveIndexVisible(
+          link
+        );
+
+      }
+
+    }
+
+
+    /* ==================================================
+       GET ALL ARTICLE HEADINGS
+       ================================================== */
+
+    function getArticleHeadings() {
+
+      if (!articleContent) {
+
+        return [];
+
+      }
+
+
+      return Array.from(
+        articleContent.querySelectorAll(
+          'h1, h2, h3, h4'
+        )
+      );
+
+    }
+
+
+    /* ==================================================
+       GET ALL ACTIVE-CHECK HEADINGS
+       ================================================== */
+
+    function getAllHeadings() {
+
+      const result = [];
+
+
+      if (postTitle) {
+
+        result.push(
+          postTitle
+        );
+
+      }
+
+
+      result.push(
+        ...getArticleHeadings()
+      );
+
+
+      return result;
+
+    }
+
+
+    /* ==================================================
+       GET MAX DOCUMENT SCROLL
+       ================================================== */
+
+    function getMaxScrollTop() {
+
+      return Math.max(
+        0,
+        document.documentElement.scrollHeight
+        -
+        window.innerHeight
+      );
+
+    }
+
+
+    /* ==================================================
+       FIND CURRENT HEADING
+       ================================================== */
+
+    function findCurrentHeading() {
+
+      const headings =
+        getAllHeadings();
+
+
+      if (
+        headings.length === 0
+      ) {
+
+        return null;
+
+      }
+
+
+      const targetY =
+        window.innerHeight * 0.2
+        +
+        10;
+
+
+      let current =
+        headings[0];
+
+
+      /* ==================================================
+         NORMAL HEADING CHECK
+         ================================================== */
+
+      for (
+        let i = 0;
+        i < headings.length;
+        i++
+      ) {
+
+        const heading =
+          headings[i];
+
+
+        const rect =
+          heading.getBoundingClientRect();
+
+
+        if (
+          rect.top
+          <=
+          targetY
+        ) {
+
+          current =
+            heading;
+
+        }
+
+        else {
+
+          break;
+
+        }
+
+      }
+
+
+      /* ==================================================
+         LAST HEADING SPECIAL CASE
+         ================================================== */
+
+      const lastHeading =
+        headings[
+          headings.length - 1
+        ];
+
+
+      const lastRect =
+        lastHeading.getBoundingClientRect();
+
+
+      const lastDocumentTop =
+        lastRect.top
+        +
+        window.scrollY;
+
+
+      const lastDesiredScrollTop =
+        lastDocumentTop
+        -
+        targetY;
+
+
+      const maxScrollTop =
+        getMaxScrollTop();
+
+
+      const currentScrollTop =
+        window.scrollY;
+
+
+      const isAtDocumentBottom =
+        currentScrollTop
+        >=
+        maxScrollTop - 2;
+
+
+      const lastHeadingCannotReachTarget =
+        lastDesiredScrollTop
+        >
+        maxScrollTop + 2;
+
+
+      if (
+        isAtDocumentBottom
+        &&
+        lastHeadingCannotReachTarget
+      ) {
+
+        current =
+          lastHeading;
+
+      }
+
+
+      return current;
+
+    }
+
+
+    /* ==================================================
+       UPDATE ACTIVE HEADING
+       ================================================== */
+
+    function updateActiveHeading() {
+
+      const current =
+        findCurrentHeading();
+
+
+      if (!current) {
+        return;
+      }
+
+
+      const slug =
+        current.id
+        ||
+        'post-title';
+
+
+      setActiveIndex(
+        slug
+      );
+
+    }
+
+
+    /* ==================================================
+       INTERSECTION OBSERVER
+       ================================================== */
+
+    function setupHeadingObserver() {
+
+      if (observer) {
+
+        observer.disconnect();
+
+        observer =
+          null;
+
+      }
+
+
+      const headings =
+        getAllHeadings();
+
+
+      if (
+        headings.length === 0
+      ) {
+
+        return;
+
+      }
+
+
+      observer =
+        new IntersectionObserver(
+          () => {
+
+            updateActiveHeading();
+
+          },
+          {
+
+            root: null,
+
+            rootMargin:
+              '-25% 0px -60% 0px',
+
+            threshold: [
+              0,
+              0.1,
+              0.5,
+              1
+            ]
+
+          }
+        );
+
+
+      headings.forEach(
+        (heading) => {
+
+          observer.observe(
+            heading
+          );
+
+        }
+      );
+
+    }
+
+
+    /* ==================================================
+       INITIALIZE ACTIVE INDEX
+       ================================================== */
+
+    function initializeActiveIndex() {
+
+      const headings =
+        getAllHeadings();
+
+
+      if (
+        headings.length === 0
+      ) {
+
+        return;
+
+      }
+
+
+      headings.forEach(
+        (heading) => {
+
+          heading.style.scrollMarginTop =
+            '6rem';
+
+        }
+      );
+
+
+      activeSlug =
+        '';
+
+
+      /*
+       * Initial active item is the post title.
+       */
+
+      setActiveIndex(
+        'post-title',
+        true
+      );
+
+
+      setupHeadingObserver();
+
+    }
+
+
+    /* ==================================================
+       SCROLL TO HEADING
+       ================================================== */
+
+    function scrollToHeading(
+      slug
+    ) {
+
+      if (!slug) {
+        return;
+      }
+
+
+      const target =
+        slug === 'post-title'
+          ? postTitle
+          : document.getElementById(
+              slug
+            );
+
+
+      if (!target) {
+        return;
+      }
+
+
+      const rect =
+        target.getBoundingClientRect();
+
+
+      /*
+       * ==================================================
+       * PAGE HEADING TARGET
+       *
+       * Keep the selected article heading
+       * at 20% of the viewport.
+       * ==================================================
+       */
+
+      const targetY =
+        window.innerHeight * 0.2;
+
+
+      const documentTop =
+        rect.top
+        +
+        window.scrollY;
+
+
+      const scrollTop =
+        documentTop
+        -
+        targetY;
+
+
+      const maxScrollTop =
+        getMaxScrollTop();
+
+
+      const finalScrollTop =
+        Math.min(
+          Math.max(
+            0,
+            scrollTop
+          ),
+          maxScrollTop
+        );
+
+
+      window.scrollTo({
+
+        top:
+          finalScrollTop,
+
+        behavior:
+          'smooth'
+
+      });
+
+
+      setActiveIndex(
+        slug,
+        false
+      );
+
+
+      /*
+       * After the article scroll begins, make sure
+       * the active Index item remains visible.
+       */
+
+      requestAnimationFrame(
+        () => {
+
+          const link =
+            tocList?.querySelector(
+              `[data-toc-link="${CSS.escape(slug)}"]`
+            );
+
+
+          if (link) {
+
+            keepActiveIndexVisible(
+              link
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* ==================================================
+       NORMAL OPEN
+       ================================================== */
+
+    function openNormalToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        true;
+
+      isOverlayMode =
+        false;
+
+
+      hideOverlay();
+      restoreNormalPosition();
+
+
+      tocSidebar.style.width =
+        '280px';
+
+      tocSidebar.style.maxWidth =
+        '280px';
+
+
+      if (tocSlot) {
+
+        tocSlot.style.width =
+          '280px';
+
+      }
+
+
+      showContent();
+
+      updateArrow();
+
+      updateNormalSlot();
+
+      updateTocHeight();
+
+    }
+
+
+    /* ==================================================
+       NORMAL CLOSE
+       ================================================== */
+
+    function closeNormalToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        false;
+
+      isOverlayMode =
+        false;
+
+
+      hideOverlay();
+      restoreNormalPosition();
+
+
+      tocSidebar.style.width =
+        '2rem';
+
+      tocSidebar.style.maxWidth =
+        '2rem';
+
+
+      if (tocSlot) {
+
+        tocSlot.style.width =
+          '2rem';
+
+      }
+
+
+      hideContent();
+
+      updateArrow();
+
+    }
+
+
+    /* ==================================================
+       MEDIUM OPEN
+       ================================================== */
+
+    function openMediumToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        true;
+
+      isOverlayMode =
+        false;
+
+
+      hideOverlay();
+      restoreNormalPosition();
+
+
+      const panelWidth =
+        getMediumIndexWidth();
+
+
+      tocSidebar.style.width =
+        `${panelWidth}px`;
+
+      tocSidebar.style.maxWidth =
+        `${panelWidth}px`;
+
+
+      if (tocSlot) {
+
+        tocSlot.style.width =
+          `${panelWidth}px`;
+
+      }
+
+
+      showContent();
+
+      updateArrow();
+
+      updateNormalSlot();
+
+      updateTocHeight();
+
+    }
+
+
+    /* ==================================================
+       MEDIUM CLOSE
+       ================================================== */
+
+    function closeMediumToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        false;
+
+      isOverlayMode =
+        false;
+
+
+      hideOverlay();
+      restoreNormalPosition();
+
+
+      tocSidebar.style.width =
+        '2rem';
+
+      tocSidebar.style.maxWidth =
+        '2rem';
+
+
+      if (tocSlot) {
+
+        tocSlot.style.width =
+          '2rem';
+
+      }
+
+
+      hideContent();
+
+      updateArrow();
+
+    }
+
+
+    /* ==================================================
+       OVERLAY OPEN
+       ================================================== */
+
+    function openOverlayToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        true;
+
+      isOverlayMode =
+        true;
+
+
+      if (tocSlot) {
+
+        tocSlot.style.width =
+          '0';
+
+        tocSlot.style.height =
+          '0';
+
+        tocSlot.style.marginTop =
+          '0';
+
+      }
+
+
+      tocSidebar.style.position =
+        'fixed';
+
+      tocSidebar.style.top =
+        '5rem';
+
+      tocSidebar.style.right =
+        '1rem';
+
+      tocSidebar.style.bottom =
+        '1rem';
+
+
+      tocSidebar.style.height =
+        'calc(100vh - 6rem)';
+
+      tocSidebar.style.maxHeight =
+        'calc(100vh - 6rem)';
+
+
+      const panelWidth =
+        Math.min(
+          280,
+          Math.max(
+            32,
+            window.innerWidth - 16
+          )
+        );
+
+
+      tocSidebar.style.width =
+        `${panelWidth}px`;
+
+      tocSidebar.style.maxWidth =
+        `${panelWidth}px`;
+
+      tocSidebar.style.zIndex =
+        '60';
+
+
+      showContent();
+
+      showOverlay();
+
+      updateArrow();
+
+      updateTocHeight();
+
+    }
+
+
+    /* ==================================================
+       OVERLAY CLOSE
+       ================================================== */
+
+    function closeOverlayToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      isTocOpen =
+        false;
+
+      isOverlayMode =
+        false;
+
+
+      hideOverlay();
+
+
+      tocSidebar.style.position =
+        'fixed';
+
+      tocSidebar.style.top =
+        '5rem';
+
+      tocSidebar.style.right =
+        '0';
+
+      tocSidebar.style.bottom =
+        '1rem';
+
+
+      tocSidebar.style.height =
+        'calc(100vh - 6rem)';
+
+      tocSidebar.style.maxHeight =
+        'calc(100vh - 6rem)';
+
+
+      tocSidebar.style.width =
+        '2rem';
+
+      tocSidebar.style.maxWidth =
+        '2rem';
+
+      tocSidebar.style.zIndex =
+        '60';
+
+
+      hideContent();
+
+      updateArrow();
+
+    }
+
+
+    /* ==================================================
+       HANDLE CLICK
+       ================================================== */
+
+    tocHandle?.addEventListener(
+      'click',
+      (event) => {
+
+        event.stopPropagation();
+
+
+        const mode =
+          getScreenMode();
+
+
+        if (
+          mode === 'small'
+        ) {
+
+          if (
+            isOverlayMode
+          ) {
+
+            closeOverlayToc();
+
+          }
+
+          else {
+
+            openOverlayToc();
+
+          }
+
+          return;
+
+        }
+
+
+        if (
+          mode === 'medium'
+        ) {
+
+          if (
+            isTocOpen
+          ) {
+
+            closeMediumToc();
+
+          }
+
+          else {
+
+            openMediumToc();
+
+          }
+
+          return;
+
+        }
+
+
+        if (
+          isTocOpen
+        ) {
+
+          closeNormalToc();
+
+        }
+
+        else {
+
+          openNormalToc();
+
+        }
+
+      }
+    );
+
+
+    /* ==================================================
+       INDEX LINK CLICK
+       ================================================== */
+
+    tocList?.addEventListener(
+      'click',
+      (event) => {
+
+        const target =
+          event.target;
+
+
+        if (
+          !(target instanceof HTMLElement)
+        ) {
+
+          return;
+
+        }
+
+
+        const link =
+          target.closest(
+            '[data-toc-link]'
+          );
+
+
+        if (!link) {
+          return;
+        }
+
+
+        event.preventDefault();
+
+
+        const slug =
+          link.getAttribute(
+            'data-toc-link'
+          );
+
+
+        if (!slug) {
+          return;
+        }
+
+
+        scrollToHeading(
+          slug
+        );
+
+
+        if (
+          getScreenMode() === 'small'
+          &&
+          isOverlayMode
+        ) {
+
+          setTimeout(
+            () => {
+
+              closeOverlayToc();
+
+            },
+            250
+          );
+
+        }
+
+      }
+    );
+
+
+    /* ==================================================
+       OVERLAY CLICK
+       ================================================== */
+
+    tocOverlay?.addEventListener(
+      'click',
+      () => {
+
+        if (
+          getScreenMode() === 'small'
+        ) {
+
+          closeOverlayToc();
+
+        }
+
+      }
+    );
+
+
+    /* ==================================================
+       RESPONSIVE
+       ================================================== */
+
+    function updateResponsiveToc() {
+
+      if (!tocSidebar) {
+        return;
+      }
+
+
+      const mode =
+        getScreenMode();
+
+
+      /* ==================================================
+         LARGE
+         ================================================== */
+
+      if (
+        mode === 'large'
+      ) {
+
+        isOverlayMode =
+          false;
+
+
+        hideOverlay();
+        restoreNormalPosition();
+
+
+        isTocOpen =
+          true;
+
+
+        tocSidebar.style.width =
+          '280px';
+
+        tocSidebar.style.maxWidth =
+          '280px';
+
+
+        if (tocSlot) {
+
+          tocSlot.style.width =
+            '280px';
+
+        }
+
+
+        showContent();
+
+        updateArrow();
+
+        updateNormalSlot();
+
+        updateTocHeight();
+
+        return;
+
+      }
+
+
+      /* ==================================================
+         MEDIUM
+         ================================================== */
+
+      if (
+        mode === 'medium'
+      ) {
+
+        isOverlayMode =
+          false;
+
+
+        hideOverlay();
+        restoreNormalPosition();
+
+
+        if (
+          isTocOpen
+        ) {
+
+          const panelWidth =
+            getMediumIndexWidth();
+
+
+          tocSidebar.style.width =
+            `${panelWidth}px`;
+
+          tocSidebar.style.maxWidth =
+            `${panelWidth}px`;
+
+
+          if (tocSlot) {
+
+            tocSlot.style.width =
+              `${panelWidth}px`;
+
+          }
+
+
+          showContent();
+
+        }
+
+        else {
+
+          tocSidebar.style.width =
+            '2rem';
+
+          tocSidebar.style.maxWidth =
+            '2rem';
+
+
+          if (tocSlot) {
+
+            tocSlot.style.width =
+              '2rem';
+
+          }
+
+
+          hideContent();
+
+        }
+
+
+        updateArrow();
+
+        updateNormalSlot();
+
+        updateTocHeight();
+
+        return;
+
+      }
+
+
+      /* ==================================================
+         SMALL
+         ================================================== */
+
+      if (
+        mode === 'small'
+      ) {
+
+        isOverlayMode =
+          false;
+
+
+        hideOverlay();
+
+
+        if (tocSlot) {
+
+          tocSlot.style.width =
+            '0';
+
+          tocSlot.style.height =
+            '0';
+
+          tocSlot.style.marginTop =
+            '0';
+
+          tocSlot.style.flex =
+            '0 0 0';
+
+        }
+
+
+        tocSidebar.style.position =
+          'fixed';
+
+        tocSidebar.style.top =
+          '5rem';
+
+        tocSidebar.style.right =
+          '0';
+
+        tocSidebar.style.bottom =
+          '1rem';
+
+
+        tocSidebar.style.height =
+          'calc(100vh - 6rem)';
+
+        tocSidebar.style.maxHeight =
+          'calc(100vh - 6rem)';
+
+
+        tocSidebar.style.width =
+          '2rem';
+
+        tocSidebar.style.maxWidth =
+          '2rem';
+
+        tocSidebar.style.zIndex =
+          '60';
+
+
+        isTocOpen =
+          false;
+
+
+        hideContent();
+
+        updateArrow();
+
+        return;
+
+      }
+
+    }
+
+
+    /* ==================================================
+       SCROLL
+       ================================================== */
+
+    window.addEventListener(
+      'scroll',
+      () => {
+
+        if (
+          scrollTicking
+        ) {
+
+          return;
+
+        }
+
+
+        scrollTicking =
+          true;
+
+
+        requestAnimationFrame(
+          () => {
+
+            updateActiveHeading();
+
+
+            if (
+              getScreenMode() !== 'small'
+              &&
+              isTocOpen
+            ) {
+
+              updateTocHeight();
+
+            }
+
+
+            scrollTicking =
+              false;
+
+          }
+        );
+
+      },
+      {
+        passive: true
+      }
+    );
+
+
+    /* ==================================================
+       RESIZE
+       ================================================== */
+
+    window.addEventListener(
+      'resize',
+      () => {
+
+        clearTimeout(
+          resizeTimer
+        );
+
+
+        resizeTimer =
+          setTimeout(
+            () => {
+
+              updateResponsiveToc();
+
+              updateNormalSlot();
+
+              updateTocHeight();
+
+              setupHeadingObserver();
+
+              updateActiveHeading();
+
+            },
+            50
+          );
+
+      }
+    );
+
+
+    /* ==================================================
+       ESC
+       ================================================== */
+
+    document.addEventListener(
+      'keydown',
+      (event) => {
+
+        if (
+          event.key === 'Escape'
+          &&
+          isOverlayMode
+        ) {
+
+          closeOverlayToc();
+
+        }
+
+      }
+    );
+
+
+    /* ==================================================
+       INITIALIZE
+       ================================================== */
+
+    initializeActiveIndex();
+
+    updateResponsiveToc();
+
+    updateArrow();
+
+    updateNormalSlot();
+
+    updateTocHeight();
+
+    updateActiveHeading();
+
+
+    /* ==================================================
+       WINDOW LOAD
+       ================================================== */
+
+    window.addEventListener(
+      'load',
+      () => {
+
+        updateResponsiveToc();
+
+        updateNormalSlot();
+
+        updateTocHeight();
+
+        updateActiveHeading();
+
+      }
+    );
+
+  </script>
+
+
+</BaseLayout>
