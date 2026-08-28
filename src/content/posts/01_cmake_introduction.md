@@ -1,7 +1,7 @@
 ---
 title: "CMake란 무엇인가?"
 date: "2026-08-24"
-categories: "CMake"
+category: "CMake"
 tags: ["CMake", "Build", "Cpp"]
 summary: "Compiler와 Build System의 관계부터 CMake가 프로젝트를 구성하는 방법까지 알아보기"
 ---
