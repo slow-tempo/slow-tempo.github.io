@@ -2,6 +2,7 @@
 title: "CMake로 Pure C++ Library 만들기"
 date: "2026-08-25"
 category: "CMake"
+tags: ["CMake", "Build", "Cpp"]
 summary: "Pure C++ 코드를 CMake Library Target으로 만들고, Build와 Install을 거쳐 다른 CMake 프로젝트에서 재사용하는 과정"
 ---
 

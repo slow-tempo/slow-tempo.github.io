@@ -2,6 +2,7 @@
 title: "ROS 2 C++ Application 만들기"
 date: "2026-08-27"
 category: "CMake"
+tags: ["CMake", "Build", "ROS2"]
 summary: "ament_cmake와 rclcpp를 사용하여 ROS 2 C++ Package를 만들고 colcon으로 빌드한 뒤 실행해 보기"
 ---
 

@@ -2,6 +2,7 @@
 title: "Pure Qt Library를 CMake로 만들기"
 date: "2026-08-26"
 category: "CMake"
+tags: ["CMake", "Build", "Cpp", "Qt"]
 summary: "Pure CMake Library 구조에 Qt5를 추가하고 Qt dependency가 CMake Target을 통해 전달되는 과정을 이해하기"
 ---
 

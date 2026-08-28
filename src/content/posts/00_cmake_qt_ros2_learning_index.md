@@ -2,6 +2,7 @@
 title: "CMake · Qt · ROS 2 학습 목차"
 date: "2026-08-23"
 category: "CMake"
+tags: ["CMake", "Build"]
 summary: "Pure CMake부터 Qt, ROS 2까지 단계적으로 학습하기 위한 목차"
 ---
 
