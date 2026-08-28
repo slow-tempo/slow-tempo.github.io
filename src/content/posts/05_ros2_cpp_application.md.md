@@ -1,7 +1,7 @@
 ---
 title: "Pure C++ Library를 ROS 2 Application에 연결하기"
 date: "2026-08-28"
-category: "ROS 2"
+category: "CMake"
 summary: "Pure CMake로 만든 C++ Algorithm Library를 ROS 2 Application에서 find_package()와 CMAKE_PREFIX_PATH를 이용해 연결해 보기"
 ---
 
