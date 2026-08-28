@@ -10,7 +10,6 @@ const postsData = rawPosts.map(post => ({
   date: post.data.date,
   category: post.data.category,
   summary: post.data.summary || '',
-  readTime: post.data.readTime || '',
   content: post.body || '',
 }));
 
@@ -480,11 +479,6 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
               dark:border-neutral-800
             "
           >
-
-            <span>
-              ${post.readTime}
-            </span>
-
             <a
               href="/posts/${post.slug}"
               class="
