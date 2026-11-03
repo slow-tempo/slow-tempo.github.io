@@ -18,7 +18,7 @@
 
   src:
     url("/fonts/Pretendard-Regular.ttf")
-    format("ttf");
+    format("truetype");
 
   font-weight: 400;
 
@@ -35,7 +35,7 @@
 
   src:
     url("/fonts/Pretendard-Bold.ttf")
-    format("ttf");
+    format("truetype");
 
   font-weight: 700;
 
@@ -52,7 +52,7 @@
 
   src:
     url("/fonts/Pretendard-ExtraBold.ttf")
-    format("ttf");
+    format("truetype");
 
   font-weight: 800;
 
@@ -185,8 +185,6 @@ body {
     "Pretendard",
     sans-serif;
 
-  font-size: 1rem;
-
   line-height: 1.8;
 
   font-weight: 400;
@@ -219,10 +217,6 @@ body {
   font-family:
     "Pretendard",
     sans-serif;
-
-  font-size: 2rem;
-
-  line-height: 1.25;
 
   font-weight: 800;
 
@@ -420,5 +414,74 @@ body {
 .site-header.header-hidden {
 
   transform: translateY(-100%);
+
+}
+
+
+/* ==================================================
+   FLOATING ACTIONS
+   ================================================== */
+
+.floating-actions {
+
+  position: fixed;
+
+  right: 1rem;
+  bottom: 1rem;
+
+  z-index: 40;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+}
+
+
+.floating-action {
+
+  width: 2.5rem;
+  height: 2.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 0.75rem;
+
+  border: 1px solid #E5E5E5;
+
+  background: #FFFFFF;
+  color: #171717;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  cursor: pointer;
+
+  transition: background 200ms ease;
+
+}
+
+
+.floating-action:hover {
+
+  background: #F5F5F5;
+
+}
+
+
+.dark .floating-action {
+
+  border-color: #2E2E2E;
+
+  background: #1E1E1E;
+  color: #F5F5F5;
+
+}
+
+
+.dark .floating-action:hover {
+
+  background: #262626;
 
 }
