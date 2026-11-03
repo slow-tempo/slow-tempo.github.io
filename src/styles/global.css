@@ -283,6 +283,15 @@ body {
    CODE
    ================================================== */
 
+#articleContent pre {
+
+  padding: 1rem;
+
+  overflow-x: auto;
+
+}
+
+
 #articleContent code,
 #articleContent pre {
 
@@ -429,7 +438,7 @@ body {
   right: 1rem;
   bottom: 1rem;
 
-  z-index: 40;
+  z-index: 70;
 
   display: flex;
   flex-direction: column;
@@ -483,5 +492,31 @@ body {
 .dark .floating-action:hover {
 
   background: #262626;
+
+}
+
+/* ==================================================
+   SMALL MODE OVERLAP FIX
+   JS small mode is <1100px. In that mode the TOC is a
+   fixed 2rem strip at the right edge, so:
+   - floating actions move left of the strip (right 3rem)
+   - the article caps at container width - 2rem, so the
+     strip no longer covers the article card's right edge
+   ================================================== */
+
+@media (max-width: 1099px) {
+
+  .floating-actions {
+
+    right: 3rem;
+
+  }
+
+
+  #postMain {
+
+    max-width: calc(100% - 2rem);
+
+  }
 
 }
