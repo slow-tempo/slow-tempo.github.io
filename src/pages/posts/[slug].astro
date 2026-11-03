@@ -118,19 +118,10 @@ const {
           w-[820px]
           max-w-full
 
-          bg-white
-          dark:bg-[#1E1E1E]
+          card
 
           p-6
           sm:p-10
-
-          rounded-2xl
-
-          border
-          border-[#E5E5E5]
-          dark:border-[#2E2E2E]
-
-          shadow-sm
 
           z-10
         "
@@ -224,6 +215,16 @@ const {
           >
             {post.data.title}
           </h1>
+
+          {post.data.tags && post.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5 mt-3">
+              {post.data.tags.map((tag) => (
+                <span class="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-xs">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
         </header>
 
@@ -344,16 +345,7 @@ const {
               sticky
               top-24
 
-              bg-white
-              dark:bg-[#1E1E1E]
-
-              rounded-2xl
-
-              border
-              border-[#E5E5E5]
-              dark:border-[#2E2E2E]
-
-              shadow-sm
+              card
 
               text-xs
 
@@ -726,6 +718,8 @@ const {
        SCRIPT
        ================================================== -->
 
+  <script src="/scripts/panel.js" is:inline></script>
+
   <script is:inline>
 
     /* ==================================================
@@ -827,206 +821,56 @@ const {
 
 
     /* ==================================================
-       SCREEN MODE
+       SCREEN MODE + PANEL — 공용 컨트롤러 (public/scripts/panel.js)
+       기하·오버레이·모드는 공용 소스 하나만 쓴다.
+       포스트 전용(슬롯 폭·목차 높이·화살표)은 아래 래퍼에서 처리한다.
        ================================================== */
 
     function getScreenMode() {
-
-      const width =
-        window.innerWidth;
-
-
-      if (width >= 1200) {
-
-        return 'large';
-
-      }
-
-
-      if (width >= 1100) {
-
-        return 'medium';
-
-      }
-
-
-      return 'small';
-
+      return window.PanelCommon.getScreenMode();
     }
-
-
-    /* ==================================================
-       CONTENT SHOW
-       ================================================== */
-
-    function showContent() {
-
-      if (!tocScroll) {
-        return;
-      }
-
-
-      tocScroll.style.opacity =
-        '1';
-
-      tocScroll.style.pointerEvents =
-        'auto';
-
-    }
-
-
-    /* ==================================================
-       CONTENT HIDE
-       ================================================== */
-
-    function hideContent() {
-
-      if (!tocScroll) {
-        return;
-      }
-
-
-      tocScroll.style.opacity =
-        '0';
-
-      tocScroll.style.pointerEvents =
-        'none';
-
-    }
-
-
-    /* ==================================================
-       OVERLAY SHOW
-       ================================================== */
-
-    function showOverlay() {
-
-      if (!tocOverlay) {
-        return;
-      }
-
-
-      tocOverlay.classList.remove(
-        'opacity-0',
-        'pointer-events-none'
-      );
-
-
-      tocOverlay.classList.add(
-        'opacity-100',
-        'pointer-events-auto'
-      );
-
-
-      document.body.style.overflow =
-        'hidden';
-
-    }
-
-
-    /* ==================================================
-       OVERLAY HIDE
-       ================================================== */
-
-    function hideOverlay() {
-
-      if (!tocOverlay) {
-        return;
-      }
-
-
-      tocOverlay.classList.remove(
-        'opacity-100',
-        'pointer-events-auto'
-      );
-
-
-      tocOverlay.classList.add(
-        'opacity-0',
-        'pointer-events-none'
-      );
-
-
-      document.body.style.overflow =
-        '';
-
-    }
-
-
-    /* ==================================================
-       NORMAL POSITION
-       ================================================== */
-
-    function restoreNormalPosition() {
-
-      if (!tocSidebar) {
-        return;
-      }
-
-
-      tocSidebar.style.position =
-        '';
-
-      tocSidebar.style.top =
-        '';
-
-      tocSidebar.style.right =
-        '';
-
-      tocSidebar.style.bottom =
-        '';
-
-      tocSidebar.style.height =
-        '';
-
-      tocSidebar.style.maxHeight =
-        '';
-
-      tocSidebar.style.zIndex =
-        '60';
-
-    }
-
-
-    /* ==================================================
-       GET MEDIUM INDEX WIDTH
-       ================================================== */
 
     function getMediumIndexWidth() {
-
-      const pagePadding =
-        window.innerWidth >= 640
-          ? 48
-          : 32;
-
-
-      const mainWidth =
-        820;
-
-
-      const gap =
-        16;
-
-
-      const available =
-        window.innerWidth
-        -
-        pagePadding
-        -
-        mainWidth
-        -
-        gap;
-
-
-      return Math.max(
-        180,
-        Math.min(
-          280,
-          available
-        )
-      );
-
+      return window.PanelCommon.getMediumPanelWidth(820);
     }
+
+    function showContent() {
+      panelController.setContent(true);
+    }
+
+    function hideContent() {
+      panelController.setContent(false);
+    }
+
+    function showOverlay() {
+      panelController.showOverlay();
+    }
+
+    function hideOverlay() {
+      panelController.hideOverlay();
+    }
+
+    function restoreNormalPosition() {
+      panelController.restoreNormal();
+      if (tocSidebar) {
+        tocSidebar.style.zIndex = '60';
+      }
+    }
+
+    const panelController = window.PanelCommon.createPanelController({
+      panel: tocSidebar,
+      handle: tocHandle,
+      content: tocScroll,
+      overlay: tocOverlay,
+      iconEl: null,
+      getOpenWidth: function () { return getMediumIndexWidth(); },
+      onStateChange: function (open, overlayMode) {
+        isTocOpen = open;
+        isOverlayMode = overlayMode;
+        updateArrow();
+      },
+      bind: false
+    });
 
 
     /* ==================================================
@@ -2274,43 +2118,16 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        true;
-
-      isOverlayMode =
-        false;
-
-
-      hideOverlay();
-      restoreNormalPosition();
-
-
-      tocSidebar.style.width =
-        '280px';
-
-      tocSidebar.style.maxWidth =
-        '280px';
-
+      panelController.openNormal();
 
       if (tocSlot) {
-
-        tocSlot.style.width =
-          '280px';
-
+        tocSlot.style.width = '280px';
       }
 
-
-      showContent();
-
-      updateArrow();
-
       updateNormalSlot();
-
       updateTocHeight();
 
     }
-
 
     /* ==================================================
        NORMAL CLOSE
@@ -2322,39 +2139,13 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        false;
-
-      isOverlayMode =
-        false;
-
-
-      hideOverlay();
-      restoreNormalPosition();
-
-
-      tocSidebar.style.width =
-        '2rem';
-
-      tocSidebar.style.maxWidth =
-        '2rem';
-
+      panelController.closeNormal();
 
       if (tocSlot) {
-
-        tocSlot.style.width =
-          '2rem';
-
+        tocSlot.style.width = '2rem';
       }
 
-
-      hideContent();
-
-      updateArrow();
-
     }
-
 
     /* ==================================================
        MEDIUM OPEN
@@ -2366,47 +2157,16 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        true;
-
-      isOverlayMode =
-        false;
-
-
-      hideOverlay();
-      restoreNormalPosition();
-
-
-      const panelWidth =
-        getMediumIndexWidth();
-
-
-      tocSidebar.style.width =
-        `${panelWidth}px`;
-
-      tocSidebar.style.maxWidth =
-        `${panelWidth}px`;
-
+      panelController.openMedium();
 
       if (tocSlot) {
-
-        tocSlot.style.width =
-          `${panelWidth}px`;
-
+        tocSlot.style.width = `${getMediumIndexWidth()}px`;
       }
 
-
-      showContent();
-
-      updateArrow();
-
       updateNormalSlot();
-
       updateTocHeight();
 
     }
-
 
     /* ==================================================
        MEDIUM CLOSE
@@ -2418,39 +2178,13 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        false;
-
-      isOverlayMode =
-        false;
-
-
-      hideOverlay();
-      restoreNormalPosition();
-
-
-      tocSidebar.style.width =
-        '2rem';
-
-      tocSidebar.style.maxWidth =
-        '2rem';
-
+      panelController.closeMedium();
 
       if (tocSlot) {
-
-        tocSlot.style.width =
-          '2rem';
-
+        tocSlot.style.width = '2rem';
       }
 
-
-      hideContent();
-
-      updateArrow();
-
     }
-
 
     /* ==================================================
        OVERLAY OPEN
@@ -2462,78 +2196,17 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        true;
-
-      isOverlayMode =
-        true;
-
+      panelController.openOverlay();
 
       if (tocSlot) {
-
-        tocSlot.style.width =
-          '0';
-
-        tocSlot.style.height =
-          '0';
-
-        tocSlot.style.marginTop =
-          '0';
-
+        tocSlot.style.width = '0';
+        tocSlot.style.height = '0';
+        tocSlot.style.marginTop = '0';
       }
-
-
-      tocSidebar.style.position =
-        'fixed';
-
-      tocSidebar.style.top =
-        '5rem';
-
-      tocSidebar.style.right =
-        '1rem';
-
-      tocSidebar.style.bottom =
-        '1rem';
-
-
-      tocSidebar.style.height =
-        'calc(100vh - 6rem)';
-
-      tocSidebar.style.maxHeight =
-        'calc(100vh - 6rem)';
-
-
-      const panelWidth =
-        Math.min(
-          280,
-          Math.max(
-            32,
-            window.innerWidth - 16
-          )
-        );
-
-
-      tocSidebar.style.width =
-        `${panelWidth}px`;
-
-      tocSidebar.style.maxWidth =
-        `${panelWidth}px`;
-
-      tocSidebar.style.zIndex =
-        '60';
-
-
-      showContent();
-
-      showOverlay();
-
-      updateArrow();
 
       updateTocHeight();
 
     }
-
 
     /* ==================================================
        OVERLAY CLOSE
@@ -2545,53 +2218,9 @@ const {
         return;
       }
 
-
-      isTocOpen =
-        false;
-
-      isOverlayMode =
-        false;
-
-
-      hideOverlay();
-
-
-      tocSidebar.style.position =
-        'fixed';
-
-      tocSidebar.style.top =
-        '5rem';
-
-      tocSidebar.style.right =
-        '0';
-
-      tocSidebar.style.bottom =
-        '1rem';
-
-
-      tocSidebar.style.height =
-        'calc(100vh - 6rem)';
-
-      tocSidebar.style.maxHeight =
-        'calc(100vh - 6rem)';
-
-
-      tocSidebar.style.width =
-        '2rem';
-
-      tocSidebar.style.maxWidth =
-        '2rem';
-
-      tocSidebar.style.zIndex =
-        '60';
-
-
-      hideContent();
-
-      updateArrow();
+      panelController.closeOverlay();
 
     }
-
 
     /* ==================================================
        HANDLE CLICK
@@ -2774,207 +2403,51 @@ const {
         return;
       }
 
+      const mode = getScreenMode();
 
-      const mode =
-        getScreenMode();
+      panelController.updateResponsive();
 
-
-      /* ==================================================
-         LARGE
-         ================================================== */
-
-      if (
-        mode === 'large'
-      ) {
-
-        isOverlayMode =
-          false;
-
-
-        hideOverlay();
-        restoreNormalPosition();
-
-
-        isTocOpen =
-          true;
-
-
-        tocSidebar.style.width =
-          '280px';
-
-        tocSidebar.style.maxWidth =
-          '280px';
-
+      if (mode === 'large') {
 
         if (tocSlot) {
-
-          tocSlot.style.width =
-            '280px';
-
+          tocSlot.style.width = '280px';
         }
 
-
-        showContent();
-
-        updateArrow();
-
         updateNormalSlot();
-
         updateTocHeight();
+        return;
+
+      }
+
+      if (mode === 'medium') {
+
+        if (isTocOpen) {
+
+          if (tocSlot) {
+            tocSlot.style.width = `${getMediumIndexWidth()}px`;
+          }
+
+          updateNormalSlot();
+          updateTocHeight();
+
+        } else {
+
+          if (tocSlot) {
+            tocSlot.style.width = '2rem';
+          }
+
+        }
 
         return;
 
       }
 
-
-      /* ==================================================
-         MEDIUM
-         ================================================== */
-
-      if (
-        mode === 'medium'
-      ) {
-
-        isOverlayMode =
-          false;
-
-
-        hideOverlay();
-        restoreNormalPosition();
-
-
-        if (
-          isTocOpen
-        ) {
-
-          const panelWidth =
-            getMediumIndexWidth();
-
-
-          tocSidebar.style.width =
-            `${panelWidth}px`;
-
-          tocSidebar.style.maxWidth =
-            `${panelWidth}px`;
-
-
-          if (tocSlot) {
-
-            tocSlot.style.width =
-              `${panelWidth}px`;
-
-          }
-
-
-          showContent();
-
-        }
-
-        else {
-
-          tocSidebar.style.width =
-            '2rem';
-
-          tocSidebar.style.maxWidth =
-            '2rem';
-
-
-          if (tocSlot) {
-
-            tocSlot.style.width =
-              '2rem';
-
-          }
-
-
-          hideContent();
-
-        }
-
-
-        updateArrow();
-
-        updateNormalSlot();
-
-        updateTocHeight();
-
-        return;
-
-      }
-
-
-      /* ==================================================
-         SMALL
-         ================================================== */
-
-      if (
-        mode === 'small'
-      ) {
-
-        isOverlayMode =
-          false;
-
-
-        hideOverlay();
-
-
-        if (tocSlot) {
-
-          tocSlot.style.width =
-            '0';
-
-          tocSlot.style.height =
-            '0';
-
-          tocSlot.style.marginTop =
-            '0';
-
-          tocSlot.style.flex =
-            '0 0 0';
-
-        }
-
-
-        tocSidebar.style.position =
-          'fixed';
-
-        tocSidebar.style.top =
-          '5rem';
-
-        tocSidebar.style.right =
-          '0';
-
-        tocSidebar.style.bottom =
-          '1rem';
-
-
-        tocSidebar.style.height =
-          'calc(100vh - 6rem)';
-
-        tocSidebar.style.maxHeight =
-          'calc(100vh - 6rem)';
-
-
-        tocSidebar.style.width =
-          '2rem';
-
-        tocSidebar.style.maxWidth =
-          '2rem';
-
-        tocSidebar.style.zIndex =
-          '60';
-
-
-        isTocOpen =
-          false;
-
-
-        hideContent();
-
-        updateArrow();
-
-        return;
-
+      // small: strip (controller already closed to the strip)
+      if (tocSlot) {
+        tocSlot.style.width = '0';
+        tocSlot.style.height = '0';
+        tocSlot.style.marginTop = '0';
+        tocSlot.style.flex = '0 0 0';
       }
 
     }

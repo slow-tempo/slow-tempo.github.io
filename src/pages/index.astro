@@ -10,7 +10,7 @@ const postsData = rawPosts.map(post => ({
   date: post.data.date,
   category: post.data.category,
   summary: post.data.summary || '',
-  content: post.body || '',
+  tags: post.data.tags || [],
 }));
 
 const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
@@ -18,7 +18,7 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
 
 <BaseLayout>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 relative">
 
     <!--
       ============================================================
@@ -27,7 +27,7 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
     -->
     <div
       id="homeLayout"
-      class="flex items-stretch justify-center relative gap-8 w-full transition-all duration-300"
+      class="flex items-stretch justify-center relative gap-4 w-full transition-all duration-300"
     >
 
       <!--
@@ -98,7 +98,7 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
         <!-- 검색 결과 없음 -->
         <div
           id="noResults"
-          class="hidden py-16 text-center text-xs text-[#737373] bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E5E5E5] dark:border-[#2E2E2E]"
+          class="hidden py-16 text-center text-xs text-[#737373] card"
         >
           검색 조건과 일치하는 포스트가 없습니다.
         </div>
@@ -125,12 +125,13 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
           transition-all
           duration-300
           relative
+          sticky
+          top-24
+          self-start
           overflow-hidden
           flex
           flex-col
           group
-          hidden
-          md:flex
         "
       >
 
@@ -192,14 +193,8 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
           <!-- 프로필 -->
           <div
             class="
-              bg-white
-              dark:bg-[#1E1E1E]
+              card
               p-6
-              rounded-2xl
-              border
-              border-[#E5E5E5]
-              dark:border-[#2E2E2E]
-              shadow-sm
             "
           >
 
@@ -221,14 +216,8 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
           <!-- 검색 -->
           <div
             class="
-              bg-white
-              dark:bg-[#1E1E1E]
+              card
               p-4
-              rounded-2xl
-              border
-              border-[#E5E5E5]
-              dark:border-[#2E2E2E]
-              shadow-sm
             "
           >
 
@@ -263,6 +252,22 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
 
     </div>
 
+    <!-- 사이드바 오버레이 (1100px 미만에서만 사용, 포스트 목차와 동일) -->
+    <div
+      id="sidebarOverlay"
+      class="
+        fixed
+        inset-0
+        z-[55]
+        bg-black/40
+        backdrop-blur-sm
+        opacity-0
+        pointer-events-none
+        transition-opacity
+        duration-300
+      "
+    ></div>
+
   </div>
 
 
@@ -271,6 +276,8 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
     Script
     ==============================================================
   -->
+
+  <script src="/scripts/panel.js" is:inline></script>
 
   <script is:inline define:vars={{ postsData }}>
 
@@ -321,7 +328,8 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
           query === '' ||
           post.title.toLowerCase().includes(query) ||
           post.summary.toLowerCase().includes(query) ||
-          post.content.toLowerCase().includes(query);
+          post.category.toLowerCase().includes(query) ||
+          (post.tags || []).join(' ').toLowerCase().includes(query);
 
 
         return matchCategory && matchSearch;
@@ -377,14 +385,8 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
 
         <article
           class="
-            bg-white
-            dark:bg-[#1E1E1E]
-            rounded-2xl
+            card
             p-6
-            border
-            border-[#E5E5E5]
-            dark:border-[#2E2E2E]
-            shadow-sm
             transition
             hover:border-neutral-400
             dark:hover:border-neutral-500
@@ -407,9 +409,9 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
             <span
               class="
                 font-semibold
-                px-2
-                py-0.5
-                rounded
+                px-2.5
+                py-1
+                rounded-md
                 bg-neutral-100
                 dark:bg-neutral-800
                 text-neutral-700
@@ -462,6 +464,19 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
           >
             ${post.summary}
           </p>
+
+
+          <!-- Tags -->
+
+          ${(post.tags || []).length ? `
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            ${(post.tags || []).map(tag => `
+            <span class="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+              ${tag}
+            </span>
+            `).join('')}
+          </div>
+          ` : ''}
 
 
           <!-- Bottom -->
@@ -601,92 +616,23 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
 
     /*
      * ============================================================
-     * Sidebar 접기 / 펼치기
-     *
-     * 글 페이지 Index와 동일한 방식
-     *
-     * OPEN
-     * 280px
-     *
-     * CLOSED
-     * 32px
+     * Sidebar — 공용 패널 컨트롤러 (public/scripts/panel.js)
+     * 포스트 목차와 동일한 소스. 목록 너비는 유동 유지 (flex-1).
      * ============================================================
      */
 
-    const sidebar =
-      document.getElementById('homeSidebar');
-
-    const sidebarContent =
-      document.getElementById('sidebarContent');
-
-    const sidebarHandle =
-      document.getElementById('sidebarHandle');
-
-    const sidebarToggleIcon =
-      document.getElementById('sidebarToggleIcon');
-
-
-    function setSidebarState(open) {
-
-      if (!sidebar || !sidebarContent || !sidebarToggleIcon) {
-        return;
-      }
-
-
-      isSidebarOpen = open;
-
-
-      if (open) {
-
-        /*
-         * 펼침
-         */
-
-        sidebar.style.width = '280px';
-        sidebar.style.maxWidth = '30%';
-
-        sidebarContent.style.opacity = '1';
-        sidebarContent.style.pointerEvents = 'auto';
-
-        sidebarToggleIcon.innerText = '‹';
-
-      } else {
-
-        /*
-         * 접힘
-         */
-
-        sidebar.style.width = '2rem';
-        sidebar.style.maxWidth = '2rem';
-
-        sidebarContent.style.opacity = '0';
-        sidebarContent.style.pointerEvents = 'none';
-
-        sidebarToggleIcon.innerText = '›';
-
-      }
-
-    }
-
-
-    /*
-     * Handle 클릭
-     */
-
-    sidebarHandle?.addEventListener('click', (event) => {
-
-      event.stopPropagation();
-
-      setSidebarState(!isSidebarOpen);
-
+    const panelController = window.PanelCommon.createPanelController({
+      panel: document.getElementById('homeSidebar'),
+      handle: document.getElementById('sidebarHandle'),
+      content: document.getElementById('sidebarContent'),
+      overlay: document.getElementById('sidebarOverlay'),
+      iconEl: document.getElementById('sidebarToggleIcon'),
+      getOpenWidth: function () { return 280; },
+      onStateChange: function (open) { isSidebarOpen = open; },
+      bind: true
     });
 
-
-    /*
-     * 초기 상태
-     */
-
-    setSidebarState(true);
+    panelController.updateResponsive();
 
 
     /*
