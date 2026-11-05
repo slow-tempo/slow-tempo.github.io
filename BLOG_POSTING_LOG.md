@@ -333,3 +333,5 @@
 - 2026-11-05 Proxmox 설치·LXC 만들기 위치 정리 (사용자): Proxmox 설치는 02에 넣고, LXC 만들기는 06에 넣는다. 02에 §2 Proxmox 설치를 추가하고 기존 §2~§5를 §3~§6으로 미뤘다 (ISO·USB 부팅·디스크·root 비밀번호·관리 주소·8006 웹 화면·무료 구독 안내). 06 §1에 LXC 만들기 단계를 추가했다 (Create CT·Debian 12 템플릿이 OS·호스트 이름·비밀번호·CPU·메모리·디스크·네트워크 2개·자동 시작·셸). 별도 proxmox_setup 초안은 02·06으로 나눠 넣고 삭제했다. 02는 발행된 글이라 다음 푸시 때 반영, 06은 초안이다.
 
 - 2026-11-05 막힐 지점 보충 (사용자 "막힐 지점 늘리자", "04 검증 + 05 명령부터 보충하자"): 06에 템플릿 다운로드·브리지 이름(vmbr0, vmbr10g)·확인 명령(ls/is-active)을 추가했다. 04 §4에 풀 확인 명령(zpool status Nas, zfs list Nas + ONLINE 확인)을 추가했다. 05 §1에 데이터셋 생성 명령(zfs create user-a/user-b/shared/backup, backup은 compression=lz4)을, §3에 bindfs 설치·fstab 2줄(force-user=33 www-data, force-group은 자기 기계 번호로 교체)·daemon-reload·mount -a를, §4에 확인 명령(zfs list, mount | grep cloud_bridge)을 추가했다. 05의 실제 사용자명은 예시(user-a/user-b)로 바꿨다. 06은 초안, 04·05는 발행된 글이라 푸시 대기.
+
+- 2026-11-05 02 막힐 지점 보충 (사용자 "보충은 해야할듯"): §2 Proxmox 설치에 USB 부팅 메뉴·설치 디스크 오선택 경고·관리 주소 형식(IP·넷마스크·게이트웨이, 192.168.0.100/24 예시)을 추가했다. 04의 디스크 경고는 zpool create 명령의 장치 이름(/dev/sda 등)을 잘못 적는 경우이고, 02의 경고는 설치 프로그램에서 설치 대상 디스크를 잘못 고르는 경우라 단계가 다르다. 02는 발행된 글이라 푸시 대기.
