@@ -101,6 +101,8 @@ target_link_libraries(pkg_app
 
 실제 프로젝트에서는 Source와 Build 결과를 분리할 수 있다.
 
+소스 코드와 빌드 결과를 분리하면, 찾기 쉽고 관리하기 편하다.
+
 ```bash
 cmake -S src/pkg_algorithm -B build/pkg_algorithm
 ```

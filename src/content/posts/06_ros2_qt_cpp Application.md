@@ -341,6 +341,8 @@ endif()
 ament_package()
 ```
 
+`-Wall -Wextra -Wpedantic`은 컴파일 경고를 켜는 옵션이다. 경고가 많이 나오게 해서, 버그가 될 수 있는 코드를 미리 찾는다. 이 부분은 ROS 2 기본 템플릿에 들어 있는 코드이다.
+
 이 CMakeLists.txt의 핵심은 다음과 같다.
 
 ```text
@@ -613,6 +615,8 @@ ros_thread
 ROS 2 Executor
 rclcpp::spin()
 ```
+
+데이터를 토픽으로 주고받는 이유는 스레드 충돌을 방지하기 위해서이다. Qt를 ROS 2 애플리케이션으로 쓰기 위해서이기도 하다.
 
 이번 장에서는 Package 통합과 전체 데이터 흐름을 검증하는 데 집중한다.
 

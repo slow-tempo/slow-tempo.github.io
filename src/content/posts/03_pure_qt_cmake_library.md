@@ -12,6 +12,8 @@ summary: "Pure CMake Library 구조에 Qt5를 추가하고 Qt dependency가 CMak
 
 이번에는 그 구조를 그대로 유지하면서 Qt5를 추가한다.
 
+Qt5는 Humble 환경의 기본 Qt이다.
+
 중요한 점은 Qt를 Application에 직접 붙이는 것보다 **Qt를 사용하는 Library Target을 만들고 그 Dependency를 Application으로 전달하는 구조**를 확인하는 것이다.
 
 전체 흐름은 다음과 같다.

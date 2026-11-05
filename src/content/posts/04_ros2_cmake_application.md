@@ -63,6 +63,8 @@ echo $ROS_DISTRO
 humble
 ```
 
+Humble은 LTS 배포판이다. 여러 PC에서 호환성을 맞추기 좋은 버전이다.
+
 `ros2` 명령어의 위치도 확인했다.
 
 ```bash
@@ -82,6 +84,8 @@ which ros2
 ## 3. ROS 2 Workspace와 Package 구조
 
 ROS 2 Package를 별도의 Workspace에서 테스트했다.
+
+Workspace를 따로 만드는 이유는 대형 프로그램의 기초를 대기 위해서이다. 여러 Package를 이용해서 하나의 거대한 Application을 만든다.
 
 전체 구조는 다음과 같다.
 
@@ -296,6 +300,8 @@ ament_target_dependencies(
     ros_app
     rclcpp
 )
+
+`ament_target_dependencies`는 ROS 2 패키지의 include 경로, 라이브러리, 컴파일 정의를 한 번에 연결해 주는 방법이다.
 ```
 
 실행 파일을 ROS 2 Package 구조에 맞게 설치한다.
@@ -307,6 +313,8 @@ install(
     DESTINATION
     lib/${PROJECT_NAME}
 )
+
+`lib/${PROJECT_NAME}`에 설치하는 이유는 라이브러리 배포 연습 때문이다. 큰 프로젝트의 연장이다. `ros2 run`은 `install/` 아래 `lib/${PROJECT_NAME}`에서 실행 파일을 찾는다.
 ```
 
 마지막으로 ROS 2 Package 설정을 마무리한다.
@@ -376,6 +384,8 @@ CMake
 ↓
 Executable
 ```
+
+colcon은 Workspace 안의 여러 Package를 의존성 순서대로 빌드해 주는 도구이다.
 
 `colcon`은 ROS 2 Workspace 내부의 Package Build 과정을 관리한다.
 

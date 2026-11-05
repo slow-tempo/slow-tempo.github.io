@@ -8,6 +8,8 @@ summary: "디스크 여러 개를 하나의 ZFS 풀로 묶고, 하드디스크�
 
 ## 1. ZFS
 
+ZFS를 고른 이유는 데이터 무결성 때문이다.
+
 ZFS는 파일시스템과 볼륨 관리자를 합친 소프트웨어이다.
 
 볼륨 관리자는 디스크를 묶는 일을 하고, 파일시스템은 파일을 저장하는 일을 한다. 보통은 두 일을 따로 한다. ZFS는 두 일을 하나로 한다. 디스크 여러 개를 하나의 풀(pool)로 묶고, 그 풀 위에 파일시스템을 만든다.
@@ -23,6 +25,8 @@ ZFS는 데이터를 저장할 때마다 검사합을 함께 저장한다. 검사
 raidz1은 디스크 여러 개에 데이터를 나누고, 복구용 정보를 하나 더 넣는 방식이다.
 
 디스크 6개로 raidz1을 만들면, 디스크 하나가 고장나도 데이터가 유지된다. 고장난 디스크를 새 디스크로 교체하면, 나머지 디스크에 있는 정보로 데이터를 복구한다.
+
+raidz1을 고른 이유는 용량 때문이다. 디스크 6개 중 1개만 복구용으로 쓰고, 나머지 5개를 저장용으로 쓸 수 있다.
 
 ```text
 ZFS 풀
@@ -48,7 +52,7 @@ ZFS 풀
 실제로 쓴 명령은 다음과 같다.
 
 ```bash
-zpool create -f -o ashift=12 -m /mnt/Nas Nas raidz1 /dev/sda /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf special /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1 /dev/nvme4n1
+zpool create -f -o ashift=12 -m /mnt/Nas Nas raidz1 /dev/sda /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf special /dev/nvme0n1 /dev/nvme2n1
 zfs set special_small_blocks=16M Nas
 ```
 
@@ -59,7 +63,7 @@ zfs set special_small_blocks=16M Nas
 - `-m /mnt/Nas`는 풀을 `/mnt/Nas`에 마운트한다.
 - `Nas`는 풀 이름이다.
 - `raidz1 /dev/sda`부터 `/dev/sdf`까지는 하드디스크 6개를 raidz1로 묶는다. 디스크 하나가 고장나도 데이터가 유지된다.
-- `special /dev/nvme1n1`부터 `/dev/nvme4n1`까지는 NVMe를 special 장치로 붙인다. 작은 파일과 메타데이터가 여기로 간다.
+- `special /dev/nvme0n1`과 `/dev/nvme2n1`은 NVMe 2개를 special 장치로 붙인다. 작은 파일과 메타데이터가 여기로 간다.
 - `special_small_blocks=16M`은 16MB 이하 파일을 special로 보낸다. 16M은 설정할 수 있는 최대값이다. 16MB까지는 전부 NVMe로 가고, 그보다 큰 파일은 하드디스크에 남는다.
 
 디스크 이름은 자기 기계에 맞게 확인해야 한다. 이름을 잘못 적으면 다른 디스크가 지워질 수 있다.

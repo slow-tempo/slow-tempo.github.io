@@ -41,7 +41,9 @@ Nextcloud는 풀 전체를 보는 것이 아니라, 자기 폴더만 본다.
 
 바인드 마운트는 한 폴더를 다른 위치에서도 보이게 하는 방법이다. 사용자 폴더를 Nextcloud가 보는 위치에 바인드 마운트로 연결하면, Nextcloud 안에서 그 폴더의 파일을 볼 수 있다.
 
-권한도 Nextcloud가 쓰는 계정에 맞춘다. 권한이 맞지 않으면, Nextcloud가 파일을 보지 못하거나 쓰지 못한다. 실제로 쓴 명령은 다음과 같다.
+bindfs를 고른 이유는 초기 가용 용량이 적어서이다. 파일을 복사하지 않고, 같은 파일을 다른 위치에서 보이게 할 수 있다.
+
+권한도 Nextcloud가 쓰는 계정에 맞춘다. 권한이 맞지 않으면, Nextcloud가 파일을 보지 못하거나 쓰지 못한다. bindfs는 권한도 바꿀 수 있다. `force-user=33`으로 Nextcloud가 쓰는 계정에 맞춰준다. 실제로 쓴 명령은 다음과 같다.
 
 ```bash
 apt-get update && apt-get install -y bindfs
@@ -49,7 +51,7 @@ mkdir -p /mnt/cloud_bridge/user-a
 mkdir -p /mnt/cloud_bridge/user-b
 ```
 
-`/etc/fstab`에 다음 두 줄을 추가한다.
+`/etc/fstab`에 다음 두 줄을 추가한다. fstab에 넣어두면, 재부팅해도 자동으로 붙는다.
 
 ```text
 bindfs#/mnt/Nas/user-a /mnt/cloud_bridge/user-a fuse perms=0770,force-user=33,force-group=1005,nonempty 0 0
