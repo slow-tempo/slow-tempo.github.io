@@ -6,7 +6,7 @@ tags: ["NAS", "wtrmax", "홈서버"]
 summary: "home nas의 몸통 하드웨어 wtrmax를 간단히 소개한다"
 ---
 
-## 1. wtrmax는 무엇인가
+## 1. wtrmax
 
 wtrmax는 작은 데스크톱 컴퓨터이다.
 
