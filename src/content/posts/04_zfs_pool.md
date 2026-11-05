@@ -64,4 +64,13 @@ zfs set special_small_blocks=16M Nas
 
 디스크 이름은 자기 기계에 맞게 확인해야 한다. 이름을 잘못 적으면 다른 디스크가 지워질 수 있다.
 
+풀이 만들어졌는지 확인한다.
+
+```bash
+zpool status Nas
+zfs list Nas
+```
+
+`zpool status`에서 `state: ONLINE`이 나오고, `zfs list`에서 `Nas`가 나오면 풀이 만들어진 것이다.
+
 풀을 만들면, 그 위에 데이터셋을 나눌 수 있다.
