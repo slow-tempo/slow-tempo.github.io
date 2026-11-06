@@ -12,7 +12,15 @@ summary: "집에서 쓰는 NAS를 처음부터 만드는 시리즈 목차"
 
 최종 목표는 다음 구조를 직접 만들고 이해하는 것이다.
 
-![home nas 구조](/images/home-nas-tree.png)
+```text
+home nas/
+└── wtrmax/ (하드웨어)
+    └── Proxmox/ (호스트)
+        ├── ZFS 저장 풀/ (호스트 저장소)
+        ├── Nextcloud/ (LXC)
+        ├── Samba/ (LXC)
+        └── 프록시/ (LXC)
+```
 
 
 만드는 순서는 다음과 같다.

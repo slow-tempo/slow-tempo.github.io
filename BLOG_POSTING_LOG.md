@@ -386,3 +386,4 @@
 - 2026-11-06 푸시 (사용자 승인 "GoatCounter로 달아줘"): GoatCounter 방문자 통계 추가. BaseLayout.astro head에 스크립트 1줄(data-goatcounter=https://slow-tempo.goatcounter.com/count, gc.zgo.at/count.js). 계정 slow-tempo, 이메일 chani.devlab@gmail.com, 이메일 인증 완료. 빌드 16페이지, dist 확인(index·07 포스트 HTML에 goatcounter 2건씩). 쿠키 미사용이라 동의 배너 불필요.
 - 2026-11-07 푸시 (사용자 승인 "이대로 푸시해줘"): NAS 08 발행. 102번 LXC 실측 기준(사용자 데이터 폴더에 NAS 데이터셋 직접 마운트, 외부 스토리지 /_pompo). GoatCounter 로그 행 포함.
 - 2026-11-07 푸시 (사용자 승인 "푸쉬 ㄱㄱ"): NAS 09 발행. 102번 LXC 실측 기준(VA-API/OpenCL 동작 확인, 앱 enabled 확인). 미리보기 상한 preview_max 1024→1920 변경 + 재생성 백그라운드 실행(previewgen1920). Elasticsearch는 컨테이너 Exited(126) 4개월 경과로 현재 정지 상태 — 글은 설치 과정 기준.
+- 2026-11-07 수정 푸시 (사용자 "해결할 의문점" 답변 반영): 05 force-group=1005를 공용 그룹으로 명시. 00 트리 이미지를 txt 도식으로 교체(통일성) + home-nas-tree.png 삭제.

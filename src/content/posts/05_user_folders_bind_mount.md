@@ -58,7 +58,7 @@ bindfs#/mnt/Nas/user-a /mnt/cloud_bridge/user-a fuse perms=0770,force-user=33,fo
 bindfs#/mnt/Nas/user-b /mnt/cloud_bridge/user-b fuse perms=0770,force-user=33,force-group=1005,nonempty 0 0
 ```
 
-`force-user=33`은 Nextcloud가 쓰는 `www-data` 계정의 번호이다. `force-group` 뒤의 번호는 자기 기계의 그룹 번호로 바꿔 쓴다. 설정을 반영한다.
+`force-user=33`은 Nextcloud가 쓰는 `www-data` 계정의 번호이다. `force-group` 뒤의 번호는 공용 그룹의 번호이다. 자기 기계의 공용 그룹 번호로 바꿔 쓴다. 설정을 반영한다.
 
 ```bash
 systemctl daemon-reload
