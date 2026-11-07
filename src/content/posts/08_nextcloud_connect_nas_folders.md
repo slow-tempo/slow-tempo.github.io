@@ -122,14 +122,41 @@ find /mnt/Nas/[사용자] -user www-data -exec chown [사용자]:[그룹] {} +
 apt-get update && apt-get install -y inotify-tools
 cat > /usr/local/bin/fix-owner.sh <<'EOF'
 #!/bin/bash
-inotifywait -m -r -e close_write,moved_to --format '%w%f' /mnt/Nas/[사용자] | while read file; do
-  chown --from=www-data [사용자]:[그룹] "$file"
+inotifywait -m -r -e close_write,moved_to,create --format '%e|%w%f' /mnt/Nas/[사용자-a] /mnt/Nas/[사용자-b] /mnt/Nas/[공용-폴더] | while IFS='|' read -r event file; do
+  case "$file" in
+    /mnt/Nas/[사용자-a]/[공용-폴더]/*|/mnt/Nas/[사용자-b]/[공용-폴더]/*|/mnt/Nas/[공용-폴더]/*)
+      if [ -d "$file" ]; then
+        chmod 2775 "$file"
+      else
+        case "$event" in
+          *CLOSE_WRITE*|*MOVED_TO*)
+            case "$file" in
+              *.py|*.sh) ;;
+              *) chmod 664 "$file" ;;
+            esac
+            ;;
+        esac
+      fi
+      ;;
+    /mnt/Nas/[사용자-a]/*)
+      case "$event" in
+        *CLOSE_WRITE*|*MOVED_TO*) chown --from=www-data [사용자-a]:[그룹] "$file" ;;
+      esac
+      ;;
+    /mnt/Nas/[사용자-b]/*)
+      case "$event" in
+        *CLOSE_WRITE*|*MOVED_TO*) chown --from=www-data [사용자-b]:[그룹] "$file" ;;
+      esac
+      ;;
+  esac
 done
 EOF
 chmod +x /usr/local/bin/fix-owner.sh
 ```
 
-`'EOF'`에 따옴표가 있다. `$file`이 스크립트 안에 그대로 들어가게 한다. `--from=www-data`는 소유주가 `www-data`인 파일만 바꾼다. `create` 이벤트로는 안 바꾼다. 만드는 도중에 소유주가 바뀌면, 이어서 쓰는 데 실패할 수 있다.
+`'EOF'`에 따옴표가 있다. `$file`이 스크립트 안에 그대로 들어가게 한다. `--format`에 `%e`가 있다. 사건 이름도 같이 받는다. `create`는 폴더를 만들 때만 쓴다. 폴더는 만드는 순간 끝나서, 바로 2775로 맞춘다. 파일은 `close_write`나 `moved_to`일 때만 바꾼다. `create`로 파일을 바꾸면, 만드는 도중에 소유주가 바뀌어서 이어서 쓰는 데 실패할 수 있다. `--from=www-data`는 소유주가 `www-data`인 파일만 바꾼다.
+
+공용 폴더는 따로 다룬다. 공용 폴더는 두 사람 폴더 안에도 있고, NAS 최상위에도 있다. 세 경로가 같은 폴더이다(바인드 마운트). 감시는 같은 폴더를 처음 본 경로로만 보고한다. 그래서 공용 폴더 사건은 `[사용자-a]/[공용-폴더]`로 보인다. 공용 폴더 파일은 소유주를 안 바꾸고, 모드만 맞춘다. 파일은 664, 폴더는 2775이다. 스크립트 파일은 .py/.sh만 빼고 664로 맞춘다. 공용 폴더 분기는 `[사용자-a]` 분기보다 앞에 둔다. 앞에 두지 않으면, 공용 폴더 파일이 `[사용자-a]` 소유로 바뀌어 버린다. 스크립트에서 `[사용자-a]`와 `[사용자-b]`는 두 사람을, `[공용-폴더]`는 공용 폴더를 뜻한다.
 
 서비스로 등록한다. 재부팅해도 자동으로 뜬다.
 
@@ -151,7 +178,7 @@ systemctl daemon-reload
 systemctl enable --now fix-owner
 ```
 
-확인한다. Nextcloud로 파일을 올리고, `ls -l`로 소유주를 본다. 자기 이름으로 바뀌어 있으면 된다. 서비스 상태도 본다.
+확인한다. Nextcloud로 파일을 올리고, `ls -l`로 소유주를 본다. 자기 이름으로 바뀌어 있으면 된다. 공용 폴더도 확인한다. 파일을 넣고 `ls -l`로 모드를 본다. 664로 바뀌어 있으면 된다. 서비스 상태도 본다.
 
 ```bash
 systemctl status fix-owner
