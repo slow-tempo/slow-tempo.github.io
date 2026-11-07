@@ -388,3 +388,4 @@
 - 2026-11-07 푸시 (사용자 승인 "푸쉬 ㄱㄱ"): NAS 09 발행. 102번 LXC 실측 기준(VA-API/OpenCL 동작 확인, 앱 enabled 확인). 미리보기 상한 preview_max 1024→1920 변경 + 재생성 백그라운드 실행(previewgen1920). Elasticsearch는 컨테이너 Exited(126) 4개월 경과로 현재 정지 상태 — 글은 설치 과정 기준.
 - 2026-11-07 수정 푸시 (사용자 "해결할 의문점" 답변 반영): 05 force-group=1005를 공용 그룹으로 명시. 00 트리 이미지를 txt 도식으로 교체(통일성) + home-nas-tree.png 삭제.
 - 2026-11-07 수정 푸시 (사용자 "02 검증 안됐으니까 이론 적으로" + "8 ㅇㅇ"): 02 가상 예시를 "이론적으로"로 수정. 죽은 패널 코드 제거(BaseLayout 인라인 RESPONSIVE SIDE PANEL 스크립트 258줄 + global.css COMMON PANEL/PANEL HANDLE/PANEL ICON 3섹션 — data-* 속성 요소가 없어서 미동작 확인, #panelOverlay와 panel.js는 유지).
+- 2026-11-07 10번 푸시 (사용자 "10 ㄱㄱ"): 10_reverse_proxy_external_access.md (리버스 프록시로 외부 접속하기) 발행. 1~6절(프록시, LXC 103, NPM 설치, 프록시 호스트 등록, 방화벽/포트포워딩, 확인), 민감값 [대괄호] 처리, 모순 docker 줄 제거.
