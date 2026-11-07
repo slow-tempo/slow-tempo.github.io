@@ -54,11 +54,11 @@ mkdir -p /mnt/cloud_bridge/user-b
 `/etc/fstab`에 다음 두 줄을 추가한다. fstab에 넣어두면, 재부팅해도 자동으로 붙는다.
 
 ```text
-bindfs#/mnt/Nas/user-a /mnt/cloud_bridge/user-a fuse perms=0770,force-user=33,force-group=1005,nonempty 0 0
-bindfs#/mnt/Nas/user-b /mnt/cloud_bridge/user-b fuse perms=0770,force-user=33,force-group=1005,nonempty 0 0
+bindfs#/mnt/Nas/user-a /mnt/cloud_bridge/user-a fuse perms=0770,force-user=33,force-group=[그룹],nonempty 0 0
+bindfs#/mnt/Nas/user-b /mnt/cloud_bridge/user-b fuse perms=0770,force-user=33,force-group=[그룹],nonempty 0 0
 ```
 
-`force-user=33`은 Nextcloud가 쓰는 `www-data` 계정의 번호이다. `force-group` 뒤의 번호는 공용 그룹의 번호이다. 자기 기계의 공용 그룹 번호로 바꿔 쓴다. 설정을 반영한다.
+`force-user=33`은 Nextcloud가 쓰는 `www-data` 계정의 번호이다. `[그룹]` 자리에는 공용 그룹 이름이나 번호를 쓴다. 설정을 반영한다.
 
 ```bash
 systemctl daemon-reload
