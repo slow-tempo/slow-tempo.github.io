@@ -393,3 +393,4 @@
 - 2026-11-07 연락 버튼 주소 별칭 교체 (사용자 "그건 하면 좋을것같은데"): mailto 주소를 +blog 별칭으로 교체. 블로그 경유 메일 구분·차단용. 문자 코드 방식 유지.
 - 2026-11-07 05 수정 (사용자 "1005도 임의의 id이니 [그룹]으로"): fstab force-group=1005를 force-group=[그룹]으로 교체 (user-a/b 두 줄) + 설명 문장 수정. 1005는 임의 ID라 고정값이 아님.
 - 2026-11-07 08 소유권 §5 추가 (사용자 승인, 이벤트 방식): Nextcloud 업로드 파일 www-data(33) 소유 → SMB에서 못 고치는 문제 + 해결법. 기존 파일은 find chown, 새 파일은 inotifywait(close_write/moved_to) 이벤트 감시 서비스로 자동 변경. 크론은 제외(사용자 결정). [그룹] 자리표시자 사용(1005는 임의 id). 확인은 §6으로 이동.
+- 2026-11-07 fix-owner 서비스 실물 설치 (사용자 승인): wtrmax /usr/local/bin/fix-owner.sh + fix-owner.service (enabled·active). /mnt/Nas/chani·oiup1206 감시, close_write/moved_to 시 www-data 소유 파일만 각 소유주로 변경 (chani 1000:1005, oiup1206 1001:1005 — 호스트에 이름 계정 없어 숫자 ID 사용). 양쪽 폴더 실전 테스트 통과. 글(08 §5)은 사용자별 1개 폴더 예시, 실물은 두 폴더를 한 서비스로 감시.
