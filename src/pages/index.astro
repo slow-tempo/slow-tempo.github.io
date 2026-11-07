@@ -664,7 +664,7 @@ const categories = ['All', ...new Set(rawPosts.map(p => p.data.category))];
       const button = document.getElementById('contactButton');
       if (!button) return;
       button.addEventListener('click', function () {
-        const codes = [99, 104, 97, 110, 105, 46, 100, 101, 118, 108, 97, 98, 64, 103, 109, 97, 105, 108, 46, 99, 111, 109];
+        const codes = [99, 104, 97, 110, 105, 46, 100, 101, 118, 108, 97, 98, 43, 98, 108, 111, 103, 64, 103, 109, 97, 105, 108, 46, 99, 111, 109];
         const address = codes.map(function (c) { return String.fromCharCode(c); }).join('');
         window.location.href = 'mailto:' + address;
       });
