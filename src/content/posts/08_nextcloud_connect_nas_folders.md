@@ -94,7 +94,72 @@ sudo -u www-data php /var/www/nextcloud/occ files_external:list
 
 여기에 마운트 지점과 경로, 적용 사용자가 나와야 한다.
 
-## 5. 확인
+## 5. 소유권
+
+같은 폴더에 쌓여도, 소유주는 만드는 쪽대로 찍힌다. Nextcloud로 올린 파일은 `www-data` 소유가 된다. Nextcloud는 웹서버 계정 `www-data`(UID 33)로 돌아가기 때문이다. SMB로 만든 파일은 로그인한 계정 소유가 된다.
+
+소유주가 `www-data`면, SMB 사용자는 그룹 권한으로만 접근한다. 그룹에 쓰기 권한이 없으면, 파일을 고치거나 지우지 못한다.
+
+확인한다.
+
+```bash
+ls -l /mnt/Nas/[사용자]
+```
+
+소유주가 `www-data`로 나오면, Nextcloud로 올린 파일이다.
+
+지금 있는 파일은 바꾼다. Proxmox 호스트에서 root로 실행한다. 자기 폴더 안의 `www-data` 소유 파일만 바꾼다. 공용 폴더는 건드리지 않는다.
+
+```bash
+find /mnt/Nas/[사용자] -user www-data -exec chown [사용자]:[그룹] {} +
+```
+
+`[사용자]` 자리에 자기 사용자 이름을, `[그룹]` 자리에 공용 그룹 이름이나 번호를 쓴다. 바뀐 뒤에 `ls -l`로 다시 확인한다.
+
+새로 올라오는 파일은 이벤트로 바꾼다. 크론으로 주기적으로 쓸어담지 않는다. 파일 쓰기가 끝나면 그때 바로 바꾼다. 설치와 서비스 등록도 Proxmox 호스트에서 한다.
+
+```bash
+apt-get update && apt-get install -y inotify-tools
+cat > /usr/local/bin/fix-owner.sh <<'EOF'
+#!/bin/bash
+inotifywait -m -r -e close_write,moved_to --format '%w%f' /mnt/Nas/[사용자] | while read file; do
+  chown --from=www-data [사용자]:[그룹] "$file"
+done
+EOF
+chmod +x /usr/local/bin/fix-owner.sh
+```
+
+`'EOF'`에 따옴표가 있다. `$file`이 스크립트 안에 그대로 들어가게 한다. `--from=www-data`는 소유주가 `www-data`인 파일만 바꾼다. `create` 이벤트로는 안 바꾼다. 만드는 도중에 소유주가 바뀌면, 이어서 쓰는 데 실패할 수 있다.
+
+서비스로 등록한다. 재부팅해도 자동으로 뜬다.
+
+```bash
+cat > /etc/systemd/system/fix-owner.service <<'EOF'
+[Unit]
+Description=Fix Nextcloud file ownership
+After=zfs-mount.service
+
+[Service]
+ExecStart=/usr/local/bin/fix-owner.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable --now fix-owner
+```
+
+확인한다. Nextcloud로 파일을 올리고, `ls -l`로 소유주를 본다. 자기 이름으로 바뀌어 있으면 된다. 서비스 상태도 본다.
+
+```bash
+systemctl status fix-owner
+```
+
+서비스가 멈추면 새 파일은 안 바뀐다. 그때는 위의 find 명령으로 한 번에 바꾼다.
+
+## 6. 확인
 
 연결이 끝났는지 확인한다.
 
