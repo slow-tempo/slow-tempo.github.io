@@ -170,7 +170,13 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable files_fulltextsearch
 sudo -u www-data php /var/www/nextcloud/occ fulltextsearch:configure '{"search_platform": "OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticsearchPlatform"}'
 ```
 
-전문 검색 설정에서 탐색 아이콘을 켜고, 파일 크기 제한을 100MB로 하고, 분석기를 Nori로 고른다.
+전문 검색 설정은 다음과 같다.
+
+```text
+탐색 아이콘: 켜기
+파일 크기 제한: 100MB
+분석기: Nori
+```
 
 인덱싱을 시작한다.
 
